@@ -2005,8 +2005,14 @@ do {    						    	\
 		obj = POP();	/* objid, should be obj */
 
 		if (verb.type != TYPE_STR || args.type != TYPE_LIST)
-		{
 			err = E_TYPE;
+		else if((obj.type == TYPE_OBJ)
+				&& (args.type == TYPE_LIST)
+				&& (verb.type == TYPE_STR)
+				&& !valid(obj.v.obj)
+				&& valid(class = server_int_option("invalid_verb_handle", -1)))
+		{
+			// Class set in second valid() test...
 		}
 		else if (obj.type == TYPE_WAIF)
 		{
@@ -3462,10 +3468,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.7 2002/06/11 22:57:39 bytenik Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.8 2002/06/12 10:57:07 bytenik Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.8  2002/06/12 10:57:07  bytenik
+ * Added 'invalid_verb_handler' server option.
+ *
  * Revision 1.7  2002/06/11 22:57:39  bytenik
  * Fixed various compiler warnings.
  *
