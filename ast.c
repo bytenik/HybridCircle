@@ -302,12 +302,6 @@ free_expr(Expr * expr)
     case EXPR_GE:
     case EXPR_IN:
     case EXPR_ASGN:
-    case EXPR_ASGNPLUS:
-    case EXPR_ASGNMINUS:
-    case EXPR_ASGNDIVIDE:
-    case EXPR_ASGNTIMES:
-    case EXPR_ASGNMOD:
-    case EXPR_ASGNEXP:
     case EXPR_EXP:
 	free_expr(expr->e.bin.lhs);
 	free_expr(expr->e.bin.rhs);
@@ -453,12 +447,12 @@ free_stmt(Stmt * stmt)
     }
 }
 
-char rcsid_ast[] = "$Id: ast.c,v 1.2 2002/04/09 01:35:49 luke-jr Exp $";
+char rcsid_ast[] = "$Id: ast.c,v 1.3 2002/04/10 11:24:48 luke-jr Exp $";
 
 /* 
  * $Log: ast.c,v $
- * Revision 1.2  2002/04/09 01:35:49  luke-jr
- * Added operators +=, -=, *=, /=, %=, and ^=... They do not decompile yet
+ * Revision 1.3  2002/04/10 11:24:48  luke-jr
+ * Removed config.status and backtracked +=, etc
  *
  * Revision 1.1.1.1  2002/02/22 19:16:52  bytenik
  * Initial import of HybridCircle 2.1i-beta1
