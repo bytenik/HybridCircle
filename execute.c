@@ -66,6 +66,7 @@
 #include "utils.h"
 #include "waif.h"
 #include "version.h"
+#include "utf8.h"
 
 /* the following globals are the guts of the virtual machine: */
 static activation *activ_stack = 0;
@@ -1023,12 +1024,12 @@ do {    						    	\
 			   || (list.type == TYPE_LIST
 		       && index.v.num > list.v.list[0].v.num /* size */ )
 			   || (list.type == TYPE_STR
-			    && index.v.num > (int) strlen(list.v.str))) {
+			    && index.v.num > (int) utf8_strlen(list.v.str))) {
 		    free_var(value);
 		    free_var(index);
 		    free_var(list);
 		    PUSH_ERROR(E_RANGE);
-		} else if (list.type == TYPE_STR && strlen(value.v.str) != 1) {
+		} else if (list.type == TYPE_STR && utf8_strlen(value.v.str) != 1) {
 		    free_var(value);
 		    free_var(index);
 		    free_var(list);
@@ -1056,10 +1057,18 @@ do {    						    	\
                     hashinsert(res, index, value);
                     PUSH(res);
 		} else {	/* TYPE_STR */
+		    /*
 		    char *tmp_str = str_dup(list.v.str);
 		    free_str(list.v.str);
 		    tmp_str[index.v.num - 1] = value.v.str[0];
 		    list.v.str = tmp_str;
+		    */
+		    
+		    char* tmp_str = str_dup(list.v.str);
+		    free_str(list.v.str);
+		    list.v.str = utf8_copyandset(tmp_str, index.v.num, value.v.str);
+		    free_str(tmp_str);
+		    
 		    free_var(value);
 		    PUSH(list);
 		}
@@ -3468,10 +3477,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.8 2002/06/12 10:57:07 bytenik Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.9 2002/06/13 11:02:43 bytenik Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.9  2002/06/13 11:02:43  bytenik
+ * Implemented UTF8 patch.
+ *
  * Revision 1.8  2002/06/12 10:57:07  bytenik
  * Added 'invalid_verb_handler' server option.
  *

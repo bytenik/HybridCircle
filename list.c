@@ -35,6 +35,7 @@
 #include "structures.h"
 #include "unparse.h"
 #include "utils.h"
+#include "utf8.h"
 
 Var
 new_list(int size)
@@ -384,31 +385,11 @@ value_to_literal(Var v)
 Var
 strrangeset(Var base, int from, int to, Var value)
 {
-    /* base and value are free'd */
-    int index, offset = 0;
-    int val_len = strlen(value.v.str);
-    int base_len = strlen(base.v.str);
-    int lenleft = (from > 1) ? from - 1 : 0;
-    int lenmiddle = val_len;
-    int lenright = (base_len > to) ? base_len - to : 0;
-    int newsize = lenleft + lenmiddle + lenright;
-
     Var ans;
-    char *s;
 
     ans.type = TYPE_STR;
-    s = mymalloc(sizeof(char) * (newsize + 1), M_STRING);
+    ans.v.str = utf8_strrangeset(base.v.str, from, to, value.v.str);
 
-    for (index = 0; index < lenleft; index++)
-	s[offset++] = base.v.str[index];
-    for (index = 0; index < lenmiddle; index++)
-	s[offset++] = value.v.str[index];
-    for (index = 0; index < lenright; index++)
-	s[offset++] = base.v.str[index + to];
-    s[offset] = '\0';
-    ans.v.str = s;
-    free_var(base);
-    free_var(value);
     return ans;
 }
 
@@ -421,13 +402,7 @@ substr(Var str, int lower, int upper)
     if (lower > upper)
 	r.v.str = str_dup("");
     else {
-	int loop, index = 0;
-	char *s = mymalloc(upper - lower + 2, M_STRING);
-
-	for (loop = lower - 1; loop < upper; loop++)
-	    s[index++] = str.v.str[loop];
-	s[index] = '\0';
-	r.v.str = s;
+	r.v.str = utf8_substr(str.v.str, lower, upper);
     }
     free_var(str);
     return r;
@@ -437,12 +412,10 @@ Var
 strget(Var str, Var i)
 {
     Var r;
-    char *s;
 
     r.type = TYPE_STR;
-    s = str_dup(" ");
-    s[0] = str.v.str[i.v.num - 1];
-    r.v.str = s;
+    r.v.str = utf8_index(str.v.str, i.v.num);
+
     return r;
 }
 
@@ -463,7 +436,7 @@ bf_length(Var arglist, Byte next, void *vdata, Objid progr)
         break;
     case TYPE_STR:
 	r.type = TYPE_INT;
-	r.v.num = strlen(arglist.v.list[1].v.str);
+	r.v.num = utf8_strlen(arglist.v.list[1].v.str);
 	break;
     default:
 	free_var(arglist);
@@ -662,7 +635,7 @@ bf_index(Var arglist, Byte next, void *vdata, Objid progr)
     if (arglist.v.list[0].v.num == 3)
 	case_matters = is_true(arglist.v.list[3]);
     r.type = TYPE_INT;
-    r.v.num = strindex(arglist.v.list[1].v.str, arglist.v.list[2].v.str,
+    r.v.num = utf8_strindex(arglist.v.list[1].v.str, arglist.v.list[2].v.str,
 		       case_matters);
 
     free_var(arglist);
@@ -679,7 +652,7 @@ bf_rindex(Var arglist, Byte next, void *vdata, Objid progr)
     if (arglist.v.list[0].v.num == 3)
 	case_matters = is_true(arglist.v.list[3]);
     r.type = TYPE_INT;
-    r.v.num = strrindex(arglist.v.list[1].v.str, arglist.v.list[2].v.str,
+    r.v.num = utf8_strrindex(arglist.v.list[1].v.str, arglist.v.list[2].v.str,
 			case_matters);
 
     free_var(arglist);
@@ -800,16 +773,16 @@ do_match(Var arglist, int reverse)
 	    ans.v.list[1].type = TYPE_INT;
 	    ans.v.list[2].type = TYPE_INT;
 	    ans.v.list[4].type = TYPE_STR;
-	    ans.v.list[1].v.num = regs[0].start;
-	    ans.v.list[2].v.num = regs[0].end;
+	    ans.v.list[1].v.num = utf8_convert_index(regs[0].start, subject);
+	    ans.v.list[2].v.num = (regs[0].end == 0 ? 0 : utf8_convert_index(regs[0].end, subject));
 	    ans.v.list[3] = new_list(9);
 	    ans.v.list[4].v.str = str_ref(subject);
 	    for (i = 1; i <= 9; i++) {
 		ans.v.list[3].v.list[i] = new_list(2);
 		ans.v.list[3].v.list[i].v.list[1].type = TYPE_INT;
-		ans.v.list[3].v.list[i].v.list[1].v.num = regs[i].start;
+		ans.v.list[3].v.list[i].v.list[1].v.num = (regs[i].start == 0 ? 0 : utf8_convert_index(regs[i].start, subject));
 		ans.v.list[3].v.list[i].v.list[2].type = TYPE_INT;
-		ans.v.list[3].v.list[i].v.list[2].v.num = regs[i].end;
+		ans.v.list[3].v.list[i].v.list[2].v.num = (regs[i].end <= 0 ? regs[i].end : utf8_convert_index(regs[i].end, subject));
 	    }
 	    break;
 	case MATCH_FAILED:
@@ -1188,12 +1161,15 @@ register_list(void)
 }
 
 
-char rcsid_list[] = "$Id: list.c,v 1.1 2002/02/22 19:17:32 bytenik Exp $";
+char rcsid_list[] = "$Id: list.c,v 1.2 2002/06/13 11:02:43 bytenik Exp $";
 
 /* 
  * $Log: list.c,v $
- * Revision 1.1  2002/02/22 19:17:32  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/13 11:02:43  bytenik
+ * Implemented UTF8 patch.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:32  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *

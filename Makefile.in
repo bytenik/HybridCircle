@@ -44,7 +44,7 @@ CSRCS = ast.c code_gen.c db_file.c db_io.c db_objects.c db_properties.c \
 	property.c quota.c ref_count.c regexpr.c server.c storage.c streams.c \
 	str_intern.c sym_table.c tasks.c timers.c unparse.c utils.c verbs.c \
 	version.c waif.c files.c ext-other.c ext-xml.c ext-zlib.c ext-gdbm.c \
-	ext-lists.c hash.c
+	ext-lists.c hash.c utf8.c
 
 OPT_NET_SRCS = net_single.c net_multi.c \
 	net_mp_selct.c net_mp_poll.c net_mp_fake.c \
@@ -63,7 +63,7 @@ HDRS =  ast.h bf_register.h code_gen.h db.h db_io.h db_private.h decompile.h \
 	options.h parse_cmd.h parser.h pattern.h program.h quota.h random.h \
 	ref_count.h regexpr.h server.h storage.h streams.h structures.h  str_intern.h \
 	sym_table.h tasks.h timers.h tokens.h unparse.h utils.h verbs.h \
-	version.h
+	version.h utf8.h
 
 SYSHDRS = my-ctype.h my-fcntl.h my-in.h my-inet.h my-ioctl.h my-math.h \
 	my-poll.h my-signal.h my-socket.h my-stat.h my-stdarg.h my-stdio.h \
@@ -163,6 +163,9 @@ depend: ${ALL_CSRCS}
 
 ###############################################################################
 # $Log: Makefile.in,v $
+# Revision 1.4  2002/06/13 11:02:43  bytenik
+# Implemented UTF8 patch.
+#
 # Revision 1.3  2002/06/11 23:22:44  bytenik
 # Now builds 'hybridcircle', not 'moo'.
 #
