@@ -130,55 +130,42 @@ static struct prec prec_table[] =
 {
     {EXPR_ASGN, 1},
 
-    {EXPR_ASGNPLUS, 2},
-    {EXPR_ASGNMINUS, 2},
-    {EXPR_ASGNTIMES, 2},
-    {EXPR_ASGNDIVIDE, 2},
-    {EXPR_ASGNMOD, 2},
-    {EXPR_ASGNEXP, 2},
-
-    {EXPR_COND, 3},		/* the unparser for this depends on only ASGN having
+    {EXPR_COND, 2},		/* the unparser for this depends on only ASGN having
 				   lower precedence.  Fix that if this changes. */
-    {EXPR_OR, 4},
-    {EXPR_AND, 4},
+    {EXPR_OR, 3},
+    {EXPR_AND, 3},
 
-    {EXPR_EQ, 5},
-    {EXPR_NE, 5},
-    {EXPR_LT, 5},
-    {EXPR_LE, 5},
-    {EXPR_GT, 5},
-    {EXPR_GE, 5},
-    {EXPR_IN, 5},
+    {EXPR_EQ, 4},
+    {EXPR_NE, 4},
+    {EXPR_LT, 4},
+    {EXPR_LE, 4},
+    {EXPR_GT, 4},
+    {EXPR_GE, 4},
+    {EXPR_IN, 4},
 
-    {EXPR_PLUS, 6},
-    {EXPR_MINUS, 6},
+    {EXPR_PLUS, 5},
+    {EXPR_MINUS, 5},
 
-    {EXPR_TIMES, 7},
-    {EXPR_DIVIDE, 7},
-    {EXPR_MOD, 7},
+    {EXPR_TIMES, 6},
+    {EXPR_DIVIDE, 6},
+    {EXPR_MOD, 6},
 
-    {EXPR_EXP, 8},
+    {EXPR_EXP, 7},
 
-/*    {EXPR_LINC, 9},
-    {EXPR_LDEC, 9},
+    {EXPR_NEGATE, 8},
+    {EXPR_NOT, 8},
 
-    {EXPR_RINC, 10},
-    {EXPR_RDEC, 10}, */
+    {EXPR_PROP, 9},
+    {EXPR_VERB, 9},
+    {EXPR_INDEX, 9},
+    {EXPR_RANGE, 9},
 
-    {EXPR_NEGATE, 11},
-    {EXPR_NOT, 11},
-
-    {EXPR_PROP, 12},
-    {EXPR_VERB, 12},
-    {EXPR_INDEX, 12},
-    {EXPR_RANGE, 12},
-
-    {EXPR_VAR, 13},
-    {EXPR_ID, 13},
-    {EXPR_LIST, 13},
-    {EXPR_CALL, 13},
-    {EXPR_LENGTH, 13},
-    {EXPR_CATCH, 13}
+    {EXPR_VAR, 10},
+    {EXPR_ID, 10},
+    {EXPR_LIST, 10},
+    {EXPR_CALL, 10},
+    {EXPR_LENGTH, 10},
+    {EXPR_CATCH, 10}
 };
 
 static int expr_prec[SizeOf_Expr_Kind];
@@ -652,42 +639,6 @@ unparse_expr(Stream * str, Expr * expr)
 	unparse_expr(str, expr->e.bin.rhs);
 	break;
 
-    case EXPR_ASGNPLUS:
-        unparse_expr(str, expr->e.bin.lhs);
-        stream_add_string(str, " += ");
-        unparse_expr(str, expr->e.bin.rhs);
-        break;
-
-    case EXPR_ASGNMINUS:
-        unparse_expr(str, expr->e.bin.lhs);
-        stream_add_string(str, " -= ");
-        unparse_expr(str, expr->e.bin.rhs);
-        break;
-
-    case EXPR_ASGNTIMES:
-        unparse_expr(str, expr->e.bin.lhs);
-        stream_add_string(str, " *= ");
-        unparse_expr(str, expr->e.bin.rhs);
-        break;
-
-    case EXPR_ASGNDIVIDE:
-        unparse_expr(str, expr->e.bin.lhs);
-        stream_add_string(str, " /= ");
-        unparse_expr(str, expr->e.bin.rhs);
-        break;
-
-    case EXPR_ASGNMOD:
-        unparse_expr(str, expr->e.bin.lhs);
-        stream_add_string(str, " %= ");
-        unparse_expr(str, expr->e.bin.rhs);
-        break;
-
-    case EXPR_ASGNEXP:
-        unparse_expr(str, expr->e.bin.lhs);
-        stream_add_string(str, " ^= ");
-        unparse_expr(str, expr->e.bin.rhs);
-        break;
-
     case EXPR_CALL:
 	stream_add_string(str, name_func_by_num(expr->e.call.func));
 	stream_add_char(str, '(');
@@ -830,12 +781,12 @@ unparse_to_stderr(Program * p, int fully_parenthesize, int indent_lines,
     unparse_to_file(stderr, p, fully_parenthesize, indent_lines, f_index);
 }
 
-char rcsid_unparse[] = "$Id: unparse.c,v 1.2 2002/04/09 01:35:49 luke-jr Exp $";
+char rcsid_unparse[] = "$Id: unparse.c,v 1.3 2002/04/10 11:25:44 luke-jr Exp $";
 
 /* 
  * $Log: unparse.c,v $
- * Revision 1.2  2002/04/09 01:35:49  luke-jr
- * Added operators +=, -=, *=, /=, %=, and ^=... They do not decompile yet
+ * Revision 1.3  2002/04/10 11:25:44  luke-jr
+ * Backtracked unparse.c too, BTW
  *
  * Revision 1.1.1.1  2002/02/22 19:18:10  bytenik
  * Initial import of HybridCircle 2.1i-beta1
