@@ -23,17 +23,20 @@
  endif
  
 -echo `date`: RESTARTED >> $1.log
-+echo `date`: RESTARTED (using $moo) >> $1.log
++echo `date`: RESTARTED \(using $moo\) >> $1.log
  #unlimit descriptors
 -nohup ./moo $1.db $1.db.new $2 >>& $1.log &
 +if (-f $moo) then
 +	nohup ./$moo $1.db $1.db.new $2 >>& $1.log &
-+elif
++else
 +	nohup $moo $1.db $1.db.new $2 >>& $1.log &
-+fi
++endif
  
  ###############################################################################
  # $Log: smoo.diff,v $
+ # Revision 1.2  2003/01/08 03:08:34  luke-jr
+ # fixed script bugs
+ #
  # Revision 1.1  2003/01/08 03:03:46  luke-jr
  # restart scripts stuff
  #
