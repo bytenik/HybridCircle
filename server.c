@@ -2043,6 +2043,8 @@ bf_reconnect_player(Var arglist, Byte next, void *vdata, Objid progr)
 		return make_error_pack(E_ARGS);
 	else if(!find_shandle(old))
 		return make_error_pack(E_ARGS);
+	else if(!is_user(new))
+		return make_error_pack(E_ARGS);
 
 	reassociate_queue(old, new);
 	player_connected(old, new, 0);
@@ -2094,10 +2096,13 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.6 2002/06/13 22:03:42 bytenik Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.7 2002/06/13 22:09:01 bytenik Exp $";
 
 /* 
  * $Log: server.c,v $
+ * Revision 1.7  2002/06/13 22:09:01  bytenik
+ * 'reconnect_player()' built-in now checks if the second argument has its player flag specified.
+ *
  * Revision 1.6  2002/06/13 22:03:42  bytenik
  * Re-enabled calls to 'user_connected' and 'user_created' when players aren't connected via. 'reconnect_player()'.
  *
