@@ -39,12 +39,19 @@ endif
 
 echo `date`: RESTARTED >> $1.log
 #unlimit descriptors
-nohup ./moo $1.db $1.db.new $2 >>& $1.log &
+if (-f hybridcircle)
+	nohup ./hybridcircle $1.db $1.db.new $2 >>& $1.log &
+else
+	nohup hybridcircle $1.db $1.db.new $2 >>& $1.log &
+endif
 
 ###############################################################################
 # $Log: restart,v $
-# Revision 1.1  2002/02/22 19:17:58  bytenik
-# Initial revision
+# Revision 1.2  2002/06/14 23:46:51  luke-jr
+# upgraded restart script :)
+#
+# Revision 1.1.1.1  2002/02/22 19:17:58  bytenik
+# Initial import of HybridCircle 2.1i-beta1
 #
 # Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
 #
