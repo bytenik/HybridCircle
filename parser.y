@@ -104,6 +104,8 @@ static void	check_loop_name(const char *, enum loop_exit_kind);
 
 %token	tTO tARROW tHASH
 
+%token  tASGNPLUS, tASGNMINUS, tASGNTIMES, tASGNDIVIDE, tASGNMON, tASGNEXP
+
 %right	'='
 %nonassoc '?' '|'
 %left	tOR tAND
@@ -111,6 +113,9 @@ static void	check_loop_name(const char *, enum loop_exit_kind);
 %left	'+' '-'
 %left	'*' '/' '%'
 %right	'^'
+%right  tASGNPLUS, tASGNMINUS
+%right  tASGNTIMES, tASGNDIVIDE, tASGNMOD
+%right  tASGNEXP
 %left	'!' tUNARYMINUS
 %nonassoc '.' ':' '[' '$'
 
@@ -466,6 +471,138 @@ expr:
 			yyerror("Illegal context for `$' expression.");
 		    $$ = alloc_expr(EXPR_LENGTH);
 		}
+	| expr tASGNPLUS expr
+                {
+		    Expr *e = $1;
+
+		    if (e->kind == EXPR_LIST) {
+			e->kind = EXPR_SCATTER;
+			if (e->e.list) {
+			    e->e.scatter = scatter_from_arglist(e->e.list);
+			    vet_scatter(e->e.scatter);
+			} else
+			    yyerror("Empty list in scattering assignment.");
+		    } else {
+			if (e->kind == EXPR_RANGE)
+			    e = e->e.range.base;
+			while (e->kind == EXPR_INDEX)
+			    e = e->e.bin.lhs;
+			if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+			    yyerror("Illegal expression on left side of"
+				    " assignment.");
+		    }
+		    $$ = alloc_binary(EXPR_ASGNPLUS, $1, $3);
+	        }
+	| expr tASGNMINUS expr
+                {
+		    Expr *e = $1;
+
+		    if (e->kind == EXPR_LIST) {
+			e->kind = EXPR_SCATTER;
+			if (e->e.list) {
+			    e->e.scatter = scatter_from_arglist(e->e.list);
+			    vet_scatter(e->e.scatter);
+			} else
+			    yyerror("Empty list in scattering assignment.");
+		    } else {
+			if (e->kind == EXPR_RANGE)
+			    e = e->e.range.base;
+			while (e->kind == EXPR_INDEX)
+			    e = e->e.bin.lhs;
+			if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+			    yyerror("Illegal expression on left side of"
+				    " assignment.");
+		    }
+		    $$ = alloc_binary(EXPR_ASGNMINUS, $1, $3);
+	        }
+	| expr tASGNTIMES expr
+                {
+		    Expr *e = $1;
+
+		    if (e->kind == EXPR_LIST) {
+			e->kind = EXPR_SCATTER;
+			if (e->e.list) {
+			    e->e.scatter = scatter_from_arglist(e->e.list);
+			    vet_scatter(e->e.scatter);
+			} else
+			    yyerror("Empty list in scattering assignment.");
+		    } else {
+			if (e->kind == EXPR_RANGE)
+			    e = e->e.range.base;
+			while (e->kind == EXPR_INDEX)
+			    e = e->e.bin.lhs;
+			if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+			    yyerror("Illegal expression on left side of"
+				    " assignment.");
+		    }
+		    $$ = alloc_binary(EXPR_ASGNTIMES, $1, $3);
+	        }
+	| expr tASGNDIVIDE expr
+                {
+		    Expr *e = $1;
+
+		    if (e->kind == EXPR_LIST) {
+			e->kind = EXPR_SCATTER;
+			if (e->e.list) {
+			    e->e.scatter = scatter_from_arglist(e->e.list);
+			    vet_scatter(e->e.scatter);
+			} else
+			    yyerror("Empty list in scattering assignment.");
+		    } else {
+			if (e->kind == EXPR_RANGE)
+			    e = e->e.range.base;
+			while (e->kind == EXPR_INDEX)
+			    e = e->e.bin.lhs;
+			if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+			    yyerror("Illegal expression on left side of"
+				    " assignment.");
+		    }
+		    $$ = alloc_binary(EXPR_ASGNDIVIDE, $1, $3);
+	        }
+	| expr tASGNMOD expr
+                {
+		    Expr *e = $1;
+
+		    if (e->kind == EXPR_LIST) {
+			e->kind = EXPR_SCATTER;
+			if (e->e.list) {
+			    e->e.scatter = scatter_from_arglist(e->e.list);
+			    vet_scatter(e->e.scatter);
+			} else
+			    yyerror("Empty list in scattering assignment.");
+		    } else {
+			if (e->kind == EXPR_RANGE)
+			    e = e->e.range.base;
+			while (e->kind == EXPR_INDEX)
+			    e = e->e.bin.lhs;
+			if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+			    yyerror("Illegal expression on left side of"
+				    " assignment.");
+		    }
+		    $$ = alloc_binary(EXPR_ASGNMOD, $1, $3);
+	        }
+	| expr tASGNEXP expr
+                {
+		    Expr *e = $1;
+
+		    if (e->kind == EXPR_LIST) {
+			e->kind = EXPR_SCATTER;
+			if (e->e.list) {
+			    e->e.scatter = scatter_from_arglist(e->e.list);
+			    vet_scatter(e->e.scatter);
+			} else
+			    yyerror("Empty list in scattering assignment.");
+		    } else {
+			if (e->kind == EXPR_RANGE)
+			    e = e->e.range.base;
+			while (e->kind == EXPR_INDEX)
+			    e = e->e.bin.lhs;
+			if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+			    yyerror("Illegal expression on left side of"
+				    " assignment.");
+		    }
+		    $$ = alloc_binary(EXPR_ASGNEXP, $1, $3);
+	        }
 	| expr '=' expr
                 {
 		    Expr *e = $1;
@@ -876,7 +1013,7 @@ start_over:
 	    }
 	} else {
 	    lex_ungetc(c);
-	    return '/';
+	    return follow('=', tASGNDIVIDE, '/');
 	}
     }
 
@@ -1028,7 +1165,12 @@ start_over:
       case '!':         return follow('=', tNE, '!');
       case '|':         return follow('|', tOR, '|');
       case '&':         return follow('&', tAND, '&');
-      case '-':         return follow('>', tHASH, '-');
+      case '-':         return follow('>', tHASH,
+				 follow('=', tASGNMINUS, '-'));
+      case '+':		return follow('=', tASGNPLUS, '+');
+      case '*':		return follow('=', tASGNTIMES, '*');
+      case '%':		return follow('=', tASGNMOD, '*');
+      case '^':		return follow('=', tASGNEXP, '^');
       normal_dot:
       case '.':		return follow('.', tTO, '.');
       default:          return c;
@@ -1307,10 +1449,13 @@ parse_list_as_program(Var code, Var *errors)
     return program;
 }
 
-char rcsid_parser[] = "$Id: parser.y,v 1.3 2002/04/10 11:24:48 luke-jr Exp $";
+char rcsid_parser[] = "$Id: parser.y,v 1.4 2002/04/10 23:49:55 luke-jr Exp $";
 
 /* 
  * $Log: parser.y,v $
+ * Revision 1.4  2002/04/10 23:49:55  luke-jr
+ * I don't know...
+ *
  * Revision 1.3  2002/04/10 11:24:48  luke-jr
  * Removed config.status and backtracked +=, etc
  *

@@ -872,6 +872,107 @@ generate_expr(Expr * expr, State * state)
 	    define_label(end_label, state);
 	}
 	break;
+    case EXPR_ASGNPLUS:
+    case EXPR_ASGNMINUS:
+    case EXPR_ASGNTIMES:
+    case EXPR_ASGNDIVIDE:
+    case EXPR_ASGNMOD:
+    case EXPR_ASGNEXP:
+        {
+	    Byte code = 0;
+	    Expr *e = expr->e.bin.lhs;
+	    int is_indexed = 0;
+
+	    push_lvalue(e, 0, state);
+	    generate_expr(expr->e.bin.rhs, state);
+
+	    emit_extended_byte(EOP_PUTMATH, state);
+	    /* code:
+		3 Bits:
+		    001: Add		0x20
+		    010: Minus		0x40
+		    011: Mult		0x60
+		    100: Divide		0x80
+		    101: Mod		0xa0
+		    110: Exp		0xc0
+		    111: append		0xe0
+		3 Bits:
+		    001: PUT		0x04
+		    010: PUT_PROP	0x08
+		    011: INDEXSET	0x0c
+		    100: RANGESET	0x10
+		    101: PUT_TEMP	0x14
+		    110: SCATTER	0x18
+	    */
+	    switch (expr->kind) {
+	    case EXPR_ASGNPLUS:
+		code += 0x20; break;
+	    case EXPR_ASGNMINUS:
+		code += 0x40; break;
+	    case EXPR_ASGNTIMES:
+		code += 0x60; break;
+ 	    case EXPR_ASGNDIVIDE:
+		code += 0x80; break;
+	    case EXPR_ASGNMOD:
+		code += 0xa0; break;
+ 	    case EXPR_ASGNEXP:
+		code += 0xc0; break;
+	    default:
+		panic("Can't happen in GENERATE_EXPR() (PUTMATH)");
+	    }
+
+	    switch (e->kind) {
+	    case EXPR_RANGE:
+		code += 0x04; break;
+	    case EXPR_INDEX:
+		code += 0x08; break;
+	    case EXPR_ID:
+		code += 0x0c; break;
+ 	    case EXPR_PROP:
+		code += 0x10; break;
+	    default:
+		panic("Can't happen in GENERATE_EXPR() (PUTMATH)");
+	    }
+
+	    emit_byte(code, state);
+
+/*	    if (e->kind == EXPR_RANGE || e->kind == EXPR_INDEX)
+		emit_byte(OP_PUT_TEMP, state); */
+
+	    while (1) {
+		switch (e->kind) {
+		case EXPR_RANGE:
+		    emit_extended_byte(EOP_RANGESET, state);
+		    pop_stack(3, state);
+		    e = e->e.range.base;
+		    is_indexed = 1;
+		    continue;
+		case EXPR_INDEX:
+		    emit_byte(OP_INDEXSET, state);
+		    pop_stack(2, state);
+		    e = e->e.bin.lhs;
+		    is_indexed = 1;
+		    continue;
+		case EXPR_ID:
+		    emit_var_op(OP_PUT, e->e.id, state);
+		    break;
+		case EXPR_PROP:
+		    emit_byte(OP_PUT_PROP, state);
+		    pop_stack(2, state);
+		    break;
+		default:
+		    panic("Bad lvalue in GENERATE_EXPR()");
+		}
+		break;
+	    }
+	    if (is_indexed) {
+		emit_byte(OP_POP, state);
+		emit_byte(OP_PUSH_TEMP, state);
+	    }
+
+//	    pop_stack(1, state);
+        }
+        break;
     case EXPR_ASGN:
 	{
 	    Expr *e = expr->e.bin.lhs;
@@ -1484,10 +1585,13 @@ generate_code(Stmt * stmt, DB_Version version)
     return prog;
 }
 
-char rcsid_code_gen[] = "$Id: code_gen.c,v 1.3 2002/04/10 11:24:48 luke-jr Exp $";
+char rcsid_code_gen[] = "$Id: code_gen.c,v 1.4 2002/04/10 23:49:55 luke-jr Exp $";
 
 /* 
  * $Log: code_gen.c,v $
+ * Revision 1.4  2002/04/10 23:49:55  luke-jr
+ * I don't know...
+ *
  * Revision 1.3  2002/04/10 11:24:48  luke-jr
  * Removed config.status and backtracked +=, etc
  *

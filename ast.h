@@ -99,6 +99,8 @@ enum Expr_Kind {
     EXPR_EQ, EXPR_NE, EXPR_LT, EXPR_LE, EXPR_GT, EXPR_GE,
     EXPR_IN, EXPR_LIST, EXPR_COND,
     EXPR_CATCH, EXPR_LENGTH, EXPR_SCATTER, EXPR_HASH,
+    EXPR_ASGNPLUS, EXPR_ASGNMINUS, EXPR_ASGNTIMES, EXPR_ASGNDIVIDE,
+    EXPR_ASGNMOD, EXPR_ASGNEXP,
     SizeOf_Expr_Kind		/* The last element is also the number of elements... */
 };
 
@@ -236,6 +238,9 @@ extern void free_stmt(Stmt *);
 
 /* 
  * $Log: ast.h,v $
+ * Revision 1.4  2002/04/10 23:49:55  luke-jr
+ * I don't know...
+ *
  * Revision 1.3  2002/04/10 11:24:48  luke-jr
  * Removed config.status and backtracked +=, etc
  *

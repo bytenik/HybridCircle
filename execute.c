@@ -1508,7 +1508,7 @@ do {    						    	\
 
 	case OP_REF:
 	    {
-		Var index, list;
+		Var index, list, ans;
 
 		index = POP();	/* should be integer for list or string,
                                    any for hash */
@@ -3452,10 +3452,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.5 2002/04/10 22:56:39 bytenik Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.6 2002/04/10 23:49:55 luke-jr Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.6  2002/04/10 23:49:55  luke-jr
+ * I don't know...
+ *
  * Revision 1.5  2002/04/10 22:56:39  bytenik
  * Changed ':operatorin()' to ':operator_in()'
  *

@@ -34,6 +34,7 @@ enum Extended_Opcode {
 /* Scatter Assignment (version 2.1h) */
     EOP_FOR_SCATTER,
 /* /Scatter Assignment */
+    EOP_PUTMATH,
 
     Last_Extended_Opcode = 255
 };
@@ -129,8 +130,11 @@ typedef enum Extended_Opcode Extended_Opcode;
 
 /* 
  * $Log: opcode.h,v $
- * Revision 1.1  2002/02/22 19:17:48  bytenik
- * Initial revision
+ * Revision 1.2  2002/04/10 23:49:55  luke-jr
+ * I don't know...
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:48  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *
