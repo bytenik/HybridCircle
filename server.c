@@ -1056,7 +1056,7 @@ server_resume_input(Objid connection)
 void
 player_connected(Objid old_id, Objid new_id, int is_newly_created)
 {
-    shandle *existing_h = find_shandle(new_id);
+	shandle *existing_h = find_shandle(new_id);
     shandle *new_h = find_shandle(old_id);
 
     if (!new_h)
@@ -1108,8 +1108,8 @@ player_connected(Objid old_id, Objid new_id, int is_newly_created)
 		send_message(new_h->listener, new_h->nhandle, "connect_msg",
 			     "*** Connected ***", 0);
 	}
-	call_notifier(new_id, new_h->listener,
-		   is_newly_created ? "user_created" : "user_connected");
+	//call_notifier(new_id, new_h->listener,
+	//	   is_newly_created ? "user_created" : "user_connected");
     }
 }
 
@@ -2037,7 +2037,15 @@ bf_buffered_output_length(Var arglist, Byte next, void *vdata, Objid progr)
 static package
 bf_reconnect_player(Var arglist, Byte next, void *vdata, Objid progr)
 {
-	player_connected(arglist.v.list[1].v.obj, arglist.v.list[2].v.obj, 0);
+	Objid	old = arglist.v.list[1].v.obj,
+			new = arglist.v.list[2].v.obj;
+	if(old == new)
+		return make_error_pack(E_ARGS);
+	else if(!find_shandle(old))
+		return make_error_pack(E_ARGS);
+
+	reassociate_queue(old, new);
+	player_connected(old, new, 0);
 	free_var(arglist);
 
 	return no_var_pack();
@@ -2086,10 +2094,13 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.4 2002/06/12 10:58:08 bytenik Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.5 2002/06/13 21:47:30 bytenik Exp $";
 
 /* 
  * $Log: server.c,v $
+ * Revision 1.5  2002/06/13 21:47:30  bytenik
+ * 'reconnect_player()' built-in is now fully-functional.
+ *
  * Revision 1.4  2002/06/12 10:58:08  bytenik
  * Preliminary (it panics) support for 'reconnect_player()' built-in, takes 2 arguments.
  *

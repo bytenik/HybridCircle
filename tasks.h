@@ -26,6 +26,7 @@ typedef struct {
     void *ptr;
 } task_queue;
 
+extern int reassociate_queue(Objid, Objid);
 extern task_queue new_task_queue(Objid player, Objid handler);
 extern void free_task_queue(task_queue q);
 
@@ -110,8 +111,11 @@ extern db_verb_handle find_verb_for_programming(Objid player,
 
 /* 
  * $Log: tasks.h,v $
- * Revision 1.1  2002/02/22 19:18:08  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/13 21:47:30  bytenik
+ * 'reconnect_player()' built-in is now fully-functional.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:18:08  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *

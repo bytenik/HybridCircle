@@ -564,7 +564,7 @@ do_login_task(tqueue * tq, char *command)
 	     * Must copy them over to their own tqueue for accounting...
 	     */
 	    tqueue *old_tq = find_tqueue(old_player, 1);
-
+		
 	    old_tq->num_bg_tasks = tq->num_bg_tasks;
 	    while ((t = dequeue_bg_task(tq)) != 0)
 		enqueue_bg_task(old_tq, t);
@@ -585,6 +585,47 @@ do_login_task(tqueue * tq, char *command)
     }
     free_var(result);
     return 1;
+}
+
+int
+reassociate_queue(Objid old_player, Objid new_player)
+{
+	task	*t;
+	tqueue	*tq,
+			*dead_tq;
+	
+	if(!(tq = find_tqueue(old_player, 0)))
+		return 0;
+
+	/* Following code lifted from do_login_command...
+	   this is intended for use in server.c's reconnect_player builtin. */
+
+	dead_tq = find_tqueue(new_player, 0);
+
+	tq->player = new_player;
+	if (tq->num_bg_tasks) {
+	    /* Cute; this un-logged-in connection has some queued tasks!
+	     * Must copy them over to their own tqueue for accounting...
+	     */
+	    tqueue *old_tq = find_tqueue(old_player, 1);
+		
+	    old_tq->num_bg_tasks = tq->num_bg_tasks;
+	    while ((t = dequeue_bg_task(tq)) != 0)
+		enqueue_bg_task(old_tq, t);
+	    tq->num_bg_tasks = 0;
+	}
+	if (dead_tq) {		/* Copy over tasks from old queue for player */
+	    tq->num_bg_tasks = dead_tq->num_bg_tasks;
+	    while ((t = dequeue_any_task(dead_tq)) != 0) {
+		if (t->kind == TASK_INPUT)
+		    free_task(t, 0);
+		else		/* FORKED or SUSPENDED */
+		    enqueue_bg_task(tq, t);
+	    }
+	    dead_tq->player = NOTHING;	/* it'll be freed by run_ready_tasks */
+	    dead_tq->num_bg_tasks = 0;
+	}
+	return 1;
 }
 
 static void
@@ -1949,10 +1990,13 @@ register_tasks(void)
     register_function("flush_input", 1, 2, bf_flush_input, TYPE_OBJ, TYPE_ANY);
 }
 
-char rcsid_tasks[] = "$Id: tasks.c,v 1.5 2002/06/12 10:58:08 bytenik Exp $";
+char rcsid_tasks[] = "$Id: tasks.c,v 1.6 2002/06/13 21:47:30 bytenik Exp $";
 
 /* 
  * $Log: tasks.c,v $
+ * Revision 1.6  2002/06/13 21:47:30  bytenik
+ * 'reconnect_player()' built-in is now fully-functional.
+ *
  * Revision 1.5  2002/06/12 10:58:08  bytenik
  * Preliminary (it panics) support for 'reconnect_player()' built-in, takes 2 arguments.
  *
