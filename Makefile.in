@@ -21,7 +21,7 @@ EXPAT = expat
 EXPAT_OBJS = $(EXPAT)/xmltok/*.o $(EXPAT)/xmlparse/*.o 
 
 CC = @CC@ -I$(EXPAT)/xmlparse
-LIBRARIES = @LIBS@ $(EXPAT_OBJS) zlib/libz.a -lgdbm
+LIBRARIES = @LIBS@ $(EXPAT_OBJS) zlib/libz.a gdbm/.libs/libgdbm.a
 YACC = @YACC@
 
 # CFLAGS = -O
@@ -163,6 +163,9 @@ depend: ${ALL_CSRCS}
 
 ###############################################################################
 # $Log: Makefile.in,v $
+# Revision 1.6  2002/06/14 19:07:53  bytenik
+# Updated to reflect in-distribution copy of gdbm.
+#
 # Revision 1.5  2002/06/14 18:54:53  bytenik
 # Updated to reflect in-distribution copy of zlib.
 #
