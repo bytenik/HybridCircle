@@ -40,7 +40,7 @@
 #include "config.h"
 #include "version.h"
 
-const char        *server_version = "2.1i-beta1";
+const char        *server_version = "2.1i-beta2";
 const char           *FUP_version = "1.8";
 const char *lambda_server_version = "1.8.1";
 
@@ -50,4 +50,4 @@ check_version(DB_Version version)
     return version < Num_DB_Versions;
 }
 
-char rcsid_version[] = "$Id: version.c,v 1.1 2002/02/22 19:18:14 bytenik Exp $";
+char rcsid_version[] = "$Id: version.c,v 1.2 2002/06/13 21:45:25 bytenik Exp $";
