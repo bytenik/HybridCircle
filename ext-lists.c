@@ -23,6 +23,8 @@
 #include "log.h"
 #include "utils.h"
 
+#include "storage.h"
+
 const char *lists_version = "1.5";
 
 int find_insert(Var lst, Var key);

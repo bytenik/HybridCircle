@@ -840,23 +840,27 @@ bf_asc(Var arglist, Byte next, void *vdata, Objid progr)
 static package
 bf_chr(Var arglist, Byte next, void *vdata, Objid progr)
 {
-	Var v;
-	if ( arglist.v.list[1].v.num < 0 || arglist.v.list[1].v.num > 255) {
-    /* out of valid character range (out of ASCII range too) */
-    free_var(arglist);
-    return make_raise_pack(E_INVARG, "Range: 1 - 255", zero);
-	}
-	if (!is_wizard(progr) && (arglist.v.list[1].v.num == 13 || arglist.v.list[1].v.num == 10))
-	{
-		free_var(arglist);
-		return make_raise_pack(E_PERM, "Only wizards can make chr(13) or chr(10)", zero);
-	}
-	v.type = TYPE_STR;
-	v.v.str = (char *) mymalloc( sizeof(char) * 2, M_STRING );
-	v.v.str[0] = arglist.v.list[1].v.num;
-	v.v.str[1] = '\0';
+    Var v;
+    char *cs;
+
+    if ( arglist.v.list[1].v.num < 0 || arglist.v.list[1].v.num > 255) {
+	/* out of valid character range (out of ASCII range too) */
 	free_var(arglist);
-	return make_var_pack(v);
+	return make_raise_pack(E_INVARG, "Range: 1 - 255", zero);
+    }
+    if (!is_wizard(progr) && (arglist.v.list[1].v.num == 13 ||
+     arglist.v.list[1].v.num == 10))
+    {
+	free_var(arglist);
+	return make_raise_pack(E_PERM, "Only wizards can make chr(13) or chr(10)", zero);
+    }
+    v.type = TYPE_STR;
+    cs = (char *) mymalloc( sizeof(char) * 2, M_STRING );
+    cs[0] = arglist.v.list[1].v.num;
+    cs[1] = '\0';
+    v.v.str = str_dup(cs);
+    free_var(arglist);
+    return make_var_pack(v);
 }
 
 void
@@ -884,10 +888,13 @@ register_verbs(void)
 
 }
 
-char rcsid_verbs[] = "$Id: verbs.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
+char rcsid_verbs[] = "$Id: verbs.c,v 1.3 2002/08/16 03:28:28 luke-jr Exp $";
 
 /* 
  * $Log: verbs.c,v $
+ * Revision 1.3  2002/08/16 03:28:28  luke-jr
+ * Removed all warnings ... clean compile now
+ *
  * Revision 1.2  2002/06/11 22:57:39  bytenik
  * Fixed various compiler warnings.
  *

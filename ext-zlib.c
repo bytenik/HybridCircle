@@ -34,6 +34,8 @@
 #include "streams.h"
 #include "utils.h"
 
+#include "storage.h"
+
 #include <zlib.h>
 
 const char *zlib_ext_version = "1.0";

@@ -37,6 +37,8 @@
 #include "utils.h"
 #include "list.h"
 
+#include "storage.h"
+
 #include "gdbm/gdbm.h"
 
 const char *gdbm_ext_version = "1.1b";

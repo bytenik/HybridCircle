@@ -373,17 +373,17 @@ excepts:
 
 		    tmp->next = $4;
 		    $$ = $1;
-		}
+		};
 
 except:
 	  opt_id '(' codes ')' statements
-		{ $$ = alloc_except($1 ? find_id($1) : -1, $3, $5); }
+		{ $$ = alloc_except($1 ? find_id($1) : -1, $3, $5); };
 
 opt_id:
 	  /* NOTHING */
 		{ $$ = 0; }
 	| tID
-		{ $$ = $1; }
+		{ $$ = $1; };
 
 expr:
 	  tINTEGER
@@ -780,19 +780,19 @@ expr:
 
 dollars_up:
 	  /* NOTHING */
-		{ dollars_ok++; }
+		{ dollars_ok++; };
 
 codes:
 	  tANY
 		{ $$ = 0; }
 	| ne_arglist
-		{ $$ = $1; }
+		{ $$ = $1; };
 
 default:
 	  /* NOTHING */
 		{ $$ = 0; }
 	| tARROW expr
-		{ $$ = $2; }
+		{ $$ = $2; };
 
 hashlist:
           expr tHASH expr
@@ -1455,10 +1455,13 @@ parse_list_as_program(Var code, Var *errors)
     return program;
 }
 
-char rcsid_parser[] = "$Id: parser.y,v 1.5 2002/05/03 21:48:06 luke-jr Exp $";
+char rcsid_parser[] = "$Id: parser.y,v 1.6 2002/08/16 03:28:28 luke-jr Exp $";
 
 /* 
  * $Log: parser.y,v $
+ * Revision 1.6  2002/08/16 03:28:28  luke-jr
+ * Removed all warnings ... clean compile now
+ *
  * Revision 1.5  2002/05/03 21:48:06  luke-jr
  * random(INT, INT)
  *
