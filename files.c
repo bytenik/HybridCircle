@@ -400,7 +400,7 @@ bf_filewrite(Var arglist, Byte next, void *vdata, Objid progr)
 static package
 bf_fileread(Var arglist, Byte next, void *vdata, Objid progr)
 { /* (directory, filename [start, end]) */
-
+	DIR *subdir;
         FILE *f;
         char infileName[BUF_LEN];
         char buffer[BUF_LEN];
@@ -424,6 +424,12 @@ bf_fileread(Var arglist, Byte next, void *vdata, Objid progr)
         if (arglist.v.list[0].v.num > 3)
                 end_line = arglist.v.list[4].v.num;
      
+        if ((subdir = opendir(infileName))) {
+                closedir(subdir);
+		free_var(arglist);
+		return make_error_pack(E_INVARG);
+        }
+
         if ((f = fopen(infileName, "r")) == 0) {
            free_var(arglist);
            return make_error_pack(E_INVARG);

@@ -2019,7 +2019,7 @@ do {    						    	\
 				&& (args.type == TYPE_LIST)
 				&& (verb.type == TYPE_STR)
 				&& !valid(obj.v.obj)
-				&& valid(class = server_int_option("invalid_verb_handle", -1)))
+				&& valid(class = server_obj_option("invalid_verb_handler", -1)))
 		{
 			// Class set in second valid() test...
 		}
@@ -3477,10 +3477,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.9 2002/06/13 11:02:43 bytenik Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.10 2002/06/20 17:29:31 luke-jr Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.10  2002/06/20 17:29:31  luke-jr
+ * Fixed invalid_verb_handler server option
+ *
  * Revision 1.9  2002/06/13 11:02:43  bytenik
  * Implemented UTF8 patch.
  *

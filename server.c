@@ -952,6 +952,17 @@ server_int_option(const char *name, int defallt)
 	return defallt;
 }
 
+int
+server_obj_option(const char *name, int defallt)
+{
+    Var v;
+
+    if (get_server_option(SYSTEM_OBJECT, name, &v))
+        return (v.type == TYPE_OBJ ? v.v.num : defallt);
+    else
+        return defallt;
+}
+
 const char *
 server_string_option(const char *name, const char *defallt)
 {
@@ -2105,10 +2116,13 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.9 2002/06/14 23:41:39 luke-jr Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.10 2002/06/20 17:29:32 luke-jr Exp $";
 
 /* 
  * $Log: server.c,v $
+ * Revision 1.10  2002/06/20 17:29:32  luke-jr
+ * Fixed invalid_verb_handler server option
+ *
  * Revision 1.9  2002/06/14 23:41:39  luke-jr
  * ext-gdbm points toward correct file for header and reconnect_player leak
  * patched... requires wizperms now too..
