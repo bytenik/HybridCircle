@@ -21,12 +21,12 @@
 #include "structures.h"
 #include "version.h"
 
-typedef unsigned char Byte;
+typedef unsigned char _Byte;
 
 typedef struct {
-    Byte numbytes_label, numbytes_literal, numbytes_fork, numbytes_var_name,
+    _Byte numbytes_label, numbytes_literal, numbytes_fork, numbytes_var_name,
      numbytes_stack;
-    Byte *vector;
+    _Byte *vector;
     unsigned size;
     unsigned max_stack;
 } Bytecodes;
@@ -64,8 +64,11 @@ extern void free_program(Program *);
 
 /* 
  * $Log: program.h,v $
- * Revision 1.1  2002/02/22 19:17:53  bytenik
- * Initial revision
+ * Revision 1.2  2002/05/29 21:43:00  bytenik
+ * Fixed conflict with latest zlib
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:53  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *
