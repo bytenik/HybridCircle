@@ -1108,8 +1108,8 @@ player_connected(Objid old_id, Objid new_id, int is_newly_created)
 		send_message(new_h->listener, new_h->nhandle, "connect_msg",
 			     "*** Connected ***", 0);
 	}
-	//call_notifier(new_id, new_h->listener,
-	//	   is_newly_created ? "user_created" : "user_connected");
+	if(!valid(old_id))
+		call_notifier(new_id, new_h->listener, is_newly_created ? "user_created" : "user_connected");
     }
 }
 
@@ -2094,10 +2094,13 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.5 2002/06/13 21:47:30 bytenik Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.6 2002/06/13 22:03:42 bytenik Exp $";
 
 /* 
  * $Log: server.c,v $
+ * Revision 1.6  2002/06/13 22:03:42  bytenik
+ * Re-enabled calls to 'user_connected' and 'user_created' when players aren't connected via. 'reconnect_player()'.
+ *
  * Revision 1.5  2002/06/13 21:47:30  bytenik
  * 'reconnect_player()' built-in is now fully-functional.
  *
