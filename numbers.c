@@ -659,21 +659,23 @@ static package
 bf_random(Var arglist, Byte next, void *vdata, Objid progr)
 {
     int nargs = arglist.v.list[0].v.num;
-    int num = (nargs >= 1 ? arglist.v.list[1].v.num : 1);
+    int num = (nargs == 1 ? arglist.v.list[1].v.num :
+              (nargs >= 2 ? arglist.v.list[2].v.num : 1));
+    int snum = (nargs >= 2 ? arglist.v.list[1].v.num : 1);
 
     free_var(arglist);
 
     if (num <= 0)
-	return make_error_pack(E_INVARG);
+        return make_error_pack(E_INVARG);
     else {
-	Var r;
+        Var r;
 
-	r.type = TYPE_INT;
-	if (nargs == 0)
-	    r.v.num = RANDOM();
-	else
-	    r.v.num = RANDOM() % num + 1;
-	return make_var_pack(r);
+        r.type = TYPE_INT;
+        if (nargs == 0)
+            r.v.num = RANDOM();
+        else
+            r.v.num = RANDOM() % (num - (snum - 1)) + snum;
+        return make_var_pack(r);
     }
 }
 
@@ -715,7 +717,7 @@ register_numbers(void)
     register_function("min", 1, -1, bf_min, TYPE_NUMERIC);
     register_function("max", 1, -1, bf_max, TYPE_NUMERIC);
     register_function("abs", 1, 1, bf_abs, TYPE_NUMERIC);
-    register_function("random", 0, 1, bf_random, TYPE_INT);
+    register_function("random", 0, 2, bf_random, TYPE_INT, TYPE_INT);
     register_function("time", 0, 0, bf_time);
     register_function("ctime", 0, 1, bf_ctime, TYPE_INT);
     register_function("floatstr", 2, 3, bf_floatstr,
@@ -739,12 +741,15 @@ register_numbers(void)
     register_function("trunc", 1, 1, bf_trunc, TYPE_FLOAT);
 }
 
-char rcsid_numbers[] = "$Id: numbers.c,v 1.1 2002/02/22 19:17:47 bytenik Exp $";
+char rcsid_numbers[] = "$Id: numbers.c,v 1.2 2002/05/03 21:48:06 luke-jr Exp $";
 
 /* 
  * $Log: numbers.c,v $
- * Revision 1.1  2002/02/22 19:17:47  bytenik
- * Initial revision
+ * Revision 1.2  2002/05/03 21:48:06  luke-jr
+ * random(INT, INT)
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:47  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *

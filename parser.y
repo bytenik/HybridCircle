@@ -104,7 +104,9 @@ static void	check_loop_name(const char *, enum loop_exit_kind);
 
 %token	tTO tARROW tHASH
 
+/* 
 %token  tASGNPLUS, tASGNMINUS, tASGNTIMES, tASGNDIVIDE, tASGNMON, tASGNEXP
+ */
 
 %right	'='
 %nonassoc '?' '|'
@@ -113,9 +115,11 @@ static void	check_loop_name(const char *, enum loop_exit_kind);
 %left	'+' '-'
 %left	'*' '/' '%'
 %right	'^'
+/* 
 %right  tASGNPLUS, tASGNMINUS
 %right  tASGNTIMES, tASGNDIVIDE, tASGNMOD
 %right  tASGNEXP
+ */
 %left	'!' tUNARYMINUS
 %nonassoc '.' ':' '[' '$'
 
@@ -471,7 +475,7 @@ expr:
 			yyerror("Illegal context for `$' expression.");
 		    $$ = alloc_expr(EXPR_LENGTH);
 		}
-	| expr tASGNPLUS expr
+/*	| expr tASGNPLUS expr
                 {
 		    Expr *e = $1;
 
@@ -602,7 +606,7 @@ expr:
 				    " assignment.");
 		    }
 		    $$ = alloc_binary(EXPR_ASGNEXP, $1, $3);
-	        }
+	        } */
 	| expr '=' expr
                 {
 		    Expr *e = $1;
@@ -1013,7 +1017,7 @@ start_over:
 	    }
 	} else {
 	    lex_ungetc(c);
-	    return follow('=', tASGNDIVIDE, '/');
+	    return '/'; /* follow('=', tASGNDIVIDE, '/'); */
 	}
     }
 
@@ -1165,12 +1169,14 @@ start_over:
       case '!':         return follow('=', tNE, '!');
       case '|':         return follow('|', tOR, '|');
       case '&':         return follow('&', tAND, '&');
-      case '-':         return follow('>', tHASH,
-				 follow('=', tASGNMINUS, '-'));
+      case '-':         return follow('>', tHASH, '-'); /*
+				 follow('=', tASGNMINUS, '-')); */
+      /* 
       case '+':		return follow('=', tASGNPLUS, '+');
       case '*':		return follow('=', tASGNTIMES, '*');
-      case '%':		return follow('=', tASGNMOD, '*');
+      case '%':		return follow('=', tASGNMOD, '%'); 
       case '^':		return follow('=', tASGNEXP, '^');
+       */
       normal_dot:
       case '.':		return follow('.', tTO, '.');
       default:          return c;
@@ -1449,10 +1455,13 @@ parse_list_as_program(Var code, Var *errors)
     return program;
 }
 
-char rcsid_parser[] = "$Id: parser.y,v 1.4 2002/04/10 23:49:55 luke-jr Exp $";
+char rcsid_parser[] = "$Id: parser.y,v 1.5 2002/05/03 21:48:06 luke-jr Exp $";
 
 /* 
  * $Log: parser.y,v $
+ * Revision 1.5  2002/05/03 21:48:06  luke-jr
+ * random(INT, INT)
+ *
  * Revision 1.4  2002/04/10 23:49:55  luke-jr
  * I don't know...
  *
