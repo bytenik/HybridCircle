@@ -396,10 +396,7 @@ bf_hash_remove(Var arglist, Byte next, void *vdata, Objid progr)
 
 	free_var(arglist);
 
-    res.type = TYPE_HASH;
-    res.v.hash = r;
-
-    return make_var_pack(retval);
+	return make_var_pack(r);
 }
 
 void
