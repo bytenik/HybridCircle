@@ -2039,12 +2039,21 @@ bf_reconnect_player(Var arglist, Byte next, void *vdata, Objid progr)
 {
 	Objid	old = arglist.v.list[1].v.obj,
 			new = arglist.v.list[2].v.obj;
-	if(old == new)
-		return make_error_pack(E_INVARG);
+	enum error e = E_NONE;
+
+	if (!is_wizard(progr))
+		e = E_PERM;
+	else if(old == new)
+		e = E_INVARG;
 	else if(!find_shandle(old))
-		return make_error_pack(E_INVARG);
+		e = E_INVARG;
 	else if(!is_user(new))
-		return make_error_pack(E_INVARG);
+		e = E_INVARG;
+
+	if(e != E_NONE) {
+		free_var(arglist);
+		return make_error_pack(e);
+	}
 
 	reassociate_queue(old, new);
 	player_connected(old, new, 0);
@@ -2056,7 +2065,7 @@ bf_reconnect_player(Var arglist, Byte next, void *vdata, Objid progr)
 void
 register_server(void)
 {
-	register_function("reconnect_player", 2, 2, bf_reconnect_player, TYPE_OBJ, TYPE_OBJ);
+    register_function("reconnect_player", 2, 2, bf_reconnect_player, TYPE_OBJ, TYPE_OBJ);
     register_function("crash", 0, 0, bf_crash);
     register_function("server_version", 0, 0, bf_server_version);
     register_function("renumber", 1, 1, bf_renumber, TYPE_OBJ);
@@ -2096,10 +2105,14 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.8 2002/06/13 22:29:35 bytenik Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.9 2002/06/14 23:41:39 luke-jr Exp $";
 
 /* 
  * $Log: server.c,v $
+ * Revision 1.9  2002/06/14 23:41:39  luke-jr
+ * ext-gdbm points toward correct file for header and reconnect_player leak
+ * patched... requires wizperms now too..
+ *
  * Revision 1.8  2002/06/13 22:29:35  bytenik
  * 'reconnect_player()' now raises the E_INVARG error, not E_ARGS.
  *
