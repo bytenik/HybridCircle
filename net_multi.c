@@ -1,19 +1,42 @@
-/******************************************************************************
-  Copyright (c) 1992, 1995, 1996 Xerox Corporation.  All rights reserved.
-  Portions of this code were written by Stephen White, aka ghond.
-  Use and copying of this software and preparation of derivative works based
-  upon this software are permitted.  Any distribution of this software or
-  derivative works must comply with all applicable United States export
-  control laws.  This software is made available AS IS, and Xerox Corporation
-  makes no warranty about the software, its performance or its conformity to
-  any specification.  Any person obtaining a copy of this software is requested
-  to send their name and post office or electronic mail address to:
-    Pavel Curtis
-    Xerox PARC
-    3333 Coyote Hill Rd.
-    Palo Alto, CA 94304
-    Pavel@Xerox.Com
- *****************************************************************************/
+/***********************************************************\
+|	HybridCircle - by the Hybrid Development Team			|
+|                  ByteNik Solutions						|
+|															|
+|	Copyright (c) 2002 by ByteNik Solutions					|
+|															|
+|	HybridCircle is distributed under the GNU Lesser		|
+|	General Public License (LGPL), and is the intellectual	|
+|	property of ByteNik Solutions. All rights not granted	|
+|	explicitly by the LGPL are reserved. This product is	|
+|	protected by various international copyright laws and	|
+|	treaties and falls under jurisdiction of the United		|
+|	States government.										|
+|															|
+|	All distributions of this code, whether modified or in	|
+|	their original form, must maintain this licence at the	|
+|	top. Additionally, all new additions to HybridCircle	|
+|	may only be distributed if they feature this licence at	|
+|	the beginning of their code and are distributed under	|
+|	the LGPL.												|
+|															|
+|	ByteNik Solutions does not claim ownership to any code	|
+|	originating from the Xerox PARC laboratory or any other	|
+|	patches written by third parties for the LambdaMOO		|
+|	platform. LambdaMOO, from which this server is based,	|
+|	is not owned by ByteNik Solutions. However, any and all	|
+|	changes made by ByteNik Solutions are their sole		|
+|	property. The original Xerox licence agreement should	|
+|	be distributed with the HybridCircle source code along	|
+|	with HybridCircle's comprehensive copyright and licence	|
+|	agreement.												|
+|															|
+|	The latest version of HybridCircle and the HybridCircle	|
+|	source code should be available at HybridCircle's		|
+|	website, at:											|
+|		--- http://www.hybrid-moo.net/hybridcircle			|
+|	or at HybridSphere's SourceForge project, at:			|
+|		--- http://sourceforge.net/projects/hybridsphere	|
+\***********************************************************/
 
 #include "my-ctype.h"
 #include <errno.h>
@@ -264,6 +287,7 @@ pull_input(nhandle * h)
     char *ptr, *end;
 
     if ((count = read(h->rfd, buffer, sizeof(buffer))) > 0) {
+	/*
 	if (h->binary) {
 	    stream_add_string(s, raw_bytes_to_binary(buffer, count));
 	    server_receive_line(h->shandle, reset_stream(s));
@@ -272,14 +296,14 @@ pull_input(nhandle * h)
 	    for (ptr = buffer, end = buffer + count; ptr < end; ptr++) {
 		unsigned char c = *ptr;
 
-		/* Begin Patch Section (pAS9) (addition) */
+		/ Begin Patch Section (pAS9) (addition) /
  		if (c == 0x08 || c == 0x7F)
- 		    /* backspace character.  User's (flawed) client is in raw
+ 		    / backspace character.  User's (flawed) client is in raw
  		       mode even though it should be in line mode.  Deal with
  		       this as graciously as we can. [This code is ugly,
- 		       but there's no stream_del_char(), so..] */
+ 		       but there's no stream_del_char(), so..] /
  		    (s->current > 0) ? s->current-- : 0;
-		/* End Patch Section (pAS9) (addition) */
+		/ End Patch Section (pAS9) (addition) /
 
 		if (c == '\r' || (c == '\n' && !h->last_input_was_CR))
 		    server_receive_line(h->shandle, reset_stream(s));
@@ -288,11 +312,29 @@ pull_input(nhandle * h)
 
 		h->last_input_was_CR = (c == '\r');
 	    }
-	}
-	return 1;
-    } else
-	return (count == 0 && !proto.believe_eof)
-	    || (count < 0 && (errno == eagain || errno == ewouldblock));
+	*/
+		for (ptr = buffer, end = buffer + count; ptr < end; ptr++)
+		{
+			unsigned char c = *ptr;
+			if (!h->binary && c == '\n')
+			{
+				server_receive_line(h->shandle, reset_stream(s));
+			}
+			else if (c >= ' ') /* We don't want people typing control characters. */
+			{
+				stream_add_char(s, c);
+			}
+		}
+
+		if (h->binary)
+		{
+			server_receive_line(h->shandle, reset_stream(s));
+			h->last_input_was_CR = 0;
+		}
+		return 1;
+    }
+	else
+		return (count == 0 && !proto.believe_eof) || (count < 0 && (errno == eagain || errno == ewouldblock));
 }
 
 static nhandle *
@@ -731,12 +773,15 @@ network_shutdown(void)
 	close_nlistener(all_nlisteners);
 }
 
-char rcsid_net_multi[] = "$Id: net_multi.c,v 1.1 2002/02/22 19:17:42 bytenik Exp $";
+char rcsid_net_multi[] = "$Id: net_multi.c,v 1.2 2002/06/13 11:02:22 bytenik Exp $";
 
 /* 
  * $Log: net_multi.c,v $
- * Revision 1.1  2002/02/22 19:17:42  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/13 11:02:22  bytenik
+ * Implemented UTF8 patch; Updated copyright notice.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:42  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *
