@@ -320,7 +320,7 @@ pull_input(nhandle * h)
 			{
 				server_receive_line(h->shandle, reset_stream(s));
 			}
-			else if (c >= ' ') /* We don't want people typing control characters. */
+			else if (c >= ' ')
 			{
 				stream_add_char(s, c);
 			}
@@ -773,10 +773,13 @@ network_shutdown(void)
 	close_nlistener(all_nlisteners);
 }
 
-char rcsid_net_multi[] = "$Id: net_multi.c,v 1.2 2002/06/13 11:02:22 bytenik Exp $";
+char rcsid_net_multi[] = "$Id: net_multi.c,v 1.3 2002/06/13 21:46:37 bytenik Exp $";
 
 /* 
  * $Log: net_multi.c,v $
+ * Revision 1.3  2002/06/13 21:46:37  bytenik
+ * Fixed bug created by UTF8 patch which prevented clients that send CRLF from entering commands.
+ *
  * Revision 1.2  2002/06/13 11:02:22  bytenik
  * Implemented UTF8 patch; Updated copyright notice.
  *
