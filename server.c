@@ -2034,9 +2034,19 @@ bf_buffered_output_length(Var arglist, Byte next, void *vdata, Objid progr)
     return make_var_pack(r);
 }
 
+static package
+bf_reconnect_player(Var arglist, Byte next, void *vdata, Objid progr)
+{
+	player_connected(arglist.v.list[1].v.obj, arglist.v.list[2].v.obj, 0);
+	free_var(arglist);
+
+	return no_var_pack();
+}
+
 void
 register_server(void)
 {
+	register_function("reconnect_player", 2, 2, bf_reconnect_player, TYPE_OBJ, TYPE_OBJ);
     register_function("crash", 0, 0, bf_crash);
     register_function("server_version", 0, 0, bf_server_version);
     register_function("renumber", 1, 1, bf_renumber, TYPE_OBJ);
@@ -2076,10 +2086,13 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.3 2002/06/11 23:52:23 bytenik Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.4 2002/06/12 10:58:08 bytenik Exp $";
 
 /* 
  * $Log: server.c,v $
+ * Revision 1.4  2002/06/12 10:58:08  bytenik
+ * Preliminary (it panics) support for 'reconnect_player()' built-in, takes 2 arguments.
+ *
  * Revision 1.3  2002/06/11 23:52:23  bytenik
  * Added 'keep_unconnected_seconds' server option.
  *

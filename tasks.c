@@ -1949,12 +1949,12 @@ register_tasks(void)
     register_function("flush_input", 1, 2, bf_flush_input, TYPE_OBJ, TYPE_ANY);
 }
 
-char rcsid_tasks[] = "$Id: tasks.c,v 1.4 2002/06/12 00:11:57 bytenik Exp $";
+char rcsid_tasks[] = "$Id: tasks.c,v 1.5 2002/06/12 10:58:08 bytenik Exp $";
 
 /* 
  * $Log: tasks.c,v $
- * Revision 1.4  2002/06/12 00:11:57  bytenik
- * Minor syntax error fixed.
+ * Revision 1.5  2002/06/12 10:58:08  bytenik
+ * Preliminary (it panics) support for 'reconnect_player()' built-in, takes 2 arguments.
  *
  * Revision 1.3  2002/06/11 23:39:59  bytenik
  * Removed PREFIX and SUFFIX built-in commands.
