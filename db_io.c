@@ -1,19 +1,42 @@
-/******************************************************************************
-  Copyright (c) 1995, 1996 Xerox Corporation.  All rights reserved.
-  Portions of this code were written by Stephen White, aka ghond.
-  Use and copying of this software and preparation of derivative works based
-  upon this software are permitted.  Any distribution of this software or
-  derivative works must comply with all applicable United States export
-  control laws.  This software is made available AS IS, and Xerox Corporation
-  makes no warranty about the software, its performance or its conformity to
-  any specification.  Any person obtaining a copy of this software is requested
-  to send their name and post office or electronic mail address to:
-    Pavel Curtis
-    Xerox PARC
-    3333 Coyote Hill Rd.
-    Palo Alto, CA 94304
-    Pavel@Xerox.Com
- *****************************************************************************/
+/***********************************************************\
+|	HybridCircle - by the Hybrid Development Team			|
+|                  ByteNik Solutions						|
+|															|
+|	Copyright (c) 2002 by ByteNik Solutions					|
+|															|
+|	HybridCircle is distributed under the GNU Lesser		|
+|	General Public License (LGPL), and is the intellectual	|
+|	property of ByteNik Solutions. All rights not granted	|
+|	explicitly by the LGPL are reserved. This product is	|
+|	protected by various international copyright laws and	|
+|	treaties and falls under jurisdiction of the United		|
+|	States government.										|
+|															|
+|	All distributions of this code, whether modified or in	|
+|	their original form, must maintain this licence at the	|
+|	top. Additionally, all new additions to HybridCircle	|
+|	may only be distributed if they feature this licence at	|
+|	the beginning of their code and are distributed under	|
+|	the LGPL.												|
+|															|
+|	ByteNik Solutions does not claim ownership to any code	|
+|	originating from the Xerox PARC laboratory or any other	|
+|	patches written by third parties for the LambdaMOO		|
+|	platform. LambdaMOO, from which this server is based,	|
+|	is not owned by ByteNik Solutions. However, any and all	|
+|	changes made by ByteNik Solutions are their sole		|
+|	property. The original Xerox licence agreement should	|
+|	be distributed with the HybridCircle source code along	|
+|	with HybridCircle's comprehensive copyright and licence	|
+|	agreement.												|
+|															|
+|	The latest version of HybridCircle and the HybridCircle	|
+|	source code should be available at HybridCircle's		|
+|	website, at:											|
+|		--- http://www.hybrid-moo.net/hybridcircle			|
+|	or at HybridSphere's SourceForge project, at:			|
+|		--- http://sourceforge.net/projects/hybridsphere	|
+\***********************************************************/
 
 /*****************************************************************************
  * Routines for use by non-DB modules with persistent state stored in the DB
@@ -446,12 +469,15 @@ dbio_write_forked_program(Program * program, int f_index)
     dbio_printf(".\n");
 }
 
-char rcsid_db_io[] = "$Id: db_io.c,v 1.1 2002/02/22 19:17:06 bytenik Exp $";
+char rcsid_db_io[] = "$Id: db_io.c,v 1.2 2002/04/10 21:26:07 bytenik Exp $";
 
 /* 
  * $Log: db_io.c,v $
- * Revision 1.1  2002/02/22 19:17:06  bytenik
- * Initial revision
+ * Revision 1.2  2002/04/10 21:26:07  bytenik
+ * Updated copyright banner
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:06  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *
