@@ -1248,7 +1248,7 @@ do {    						    	\
 				arglist.v.list[1] = var_dup(lhs);
 				free_var(lhs);
 				STORE_STATE_VARIABLES();
-				err = call_verb(rhs.v.obj, "operatorin", arglist, 0);
+				err = call_verb(rhs.v.obj, "operator_in", arglist, 0);
 				free_var(rhs);
 				if (err)
 				{
@@ -3452,10 +3452,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.4 2002/04/10 22:48:27 bytenik Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.5 2002/04/10 22:56:39 bytenik Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.5  2002/04/10 22:56:39  bytenik
+ * Changed ':operatorin()' to ':operator_in()'
+ *
  * Revision 1.4  2002/04/10 22:48:27  bytenik
  * Changed wrappers from ':operator_<op>()' to ':operator<op>()';
  * Fixed bug in 'not' wrapper where 'call_verb()' was called with 'lhs' instead of 'arg';
