@@ -486,12 +486,12 @@ do_command_task(tqueue * tq, char *command)
 		notify(tq->player, "Usage:  .program object:verb");
 	    else
 		start_programming(tq, (char *) pc->args.v.list[1].v.str);
-	} else if (strcmp(pc->verb, "PREFIX") == 0
+/*	} else if (strcmp(pc->verb, "PREFIX") == 0
 		   || strcmp(pc->verb, "OUTPUTPREFIX") == 0)
 	    set_delimiter(&(tq->output_prefix), pc->argstr);
 	else if (strcmp(pc->verb, "SUFFIX") == 0
 		 || strcmp(pc->verb, "OUTPUTSUFFIX") == 0)
-	    set_delimiter(&(tq->output_suffix), pc->argstr);
+	    set_delimiter(&(tq->output_suffix), pc->argstr); */
 	else {
 	    Objid location = (valid(tq->player)
 			      ? db_object_location(tq->player)
@@ -1948,10 +1948,13 @@ register_tasks(void)
     register_function("flush_input", 1, 2, bf_flush_input, TYPE_OBJ, TYPE_ANY);
 }
 
-char rcsid_tasks[] = "$Id: tasks.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
+char rcsid_tasks[] = "$Id: tasks.c,v 1.3 2002/06/11 23:39:59 bytenik Exp $";
 
 /* 
  * $Log: tasks.c,v $
+ * Revision 1.3  2002/06/11 23:39:59  bytenik
+ * Removed PREFIX and SUFFIX built-in commands.
+ *
  * Revision 1.2  2002/06/11 22:57:39  bytenik
  * Fixed various compiler warnings.
  *
