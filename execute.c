@@ -1151,16 +1151,16 @@ do {    						    	\
 				free_var(rhs);
 				switch (op) {
 				case OP_GT:
-					vname = "operator_>";
+					vname = "operator>";
 					break;
 				case OP_LT:
-					vname = "operator_<";
+					vname = "operator<";
 					break;
 				case OP_GE:
-					vname = "operator_>=";
+					vname = "operator>=";
 					break;
 				case OP_LE:
-					vname = "operator_<=";
+					vname = "operator<=";
 					break;
 				default:
 					errlog("RUN: Imposible opcode in comparison: %d\n", op);
@@ -1248,7 +1248,7 @@ do {    						    	\
 				arglist.v.list[1] = var_dup(lhs);
 				free_var(lhs);
 				STORE_STATE_VARIABLES();
-				err = call_verb(rhs.v.obj, "operator_in", arglist, 0);
+				err = call_verb(rhs.v.obj, "operatorin", arglist, 0);
 				free_var(rhs);
 				if (err)
 				{
@@ -1317,16 +1317,16 @@ do {    						    	\
 				free_var(rhs);
 				switch (op) {
 				case OP_MULT:
-					vname = "operator_*";
+					vname = "operator*";
 					break;
 				case OP_MINUS:
-					vname = "operator_-";
+					vname = "operator-";
 					break;
 				case OP_DIV:
-					vname = "operator_/";
+					vname = "operator/";
 					break;
 				case OP_MOD:
-					vname = "operator_%";
+					vname = "operator%";
 					break;
 				default:
 					errlog("RUN: Impossible opcode in arith ops: %d\n", op);
@@ -1387,7 +1387,7 @@ do {    						    	\
 				arglist.v.list[1] = var_dup(rhs);
 				free_var(rhs);
 				STORE_STATE_VARIABLES();
-				err = call_verb(lhs.v.obj, "operator_+", arglist, 0);
+				err = call_verb(lhs.v.obj, "operator+", arglist, 0);
 				free_var(lhs);
 				if (err)
 				{
@@ -1443,7 +1443,7 @@ do {    						    	\
 			enum error err;
 			
 			STORE_STATE_VARIABLES();
-			err = call_verb(lhs.v.obj, "operator_!", arglist, 0);
+			err = call_verb(arg.v.obj, "operator!", arglist, 0);
 			free_var(arg);
 			if (err)
 			{
@@ -1481,7 +1481,7 @@ do {    						    	\
 			else {
 				enum error err;
 				STORE_STATE_VARIABLES();
-				err = call_verb(arg.v.obj, "operator_u-", new_list(0), 0);
+				err = call_verb(arg.v.obj, "operator~", new_list(0), 0);
 				free_var(arg);
 				if (err)
 				{
@@ -1514,7 +1514,31 @@ do {    						    	\
                                    any for hash */
 		list = POP();	/* should be list, string, or hash */
 
-		if ((list.type != TYPE_LIST && list.type != TYPE_STR &&
+		if (list.type == TYPE_OBJ)
+		{
+			Var arglist = new_list(1);
+			enum error err;
+
+			arglist.v.list[1] = var_dup(index);
+			free_var(index);
+
+			STORE_STATE_VARIABLES();
+			err = call_verb(list.v.obj, "operator[]", arglist, 0);
+			free_var(list);
+
+			if (err)
+			{
+				LOAD_STATE_VARIABLES();
+				PUSH_ERROR(err);
+			}
+			else
+			{
+				ans = POP();
+				LOAD_STATE_VARIABLES();
+				PUSH(ans);
+			}
+		}
+		else if ((list.type != TYPE_LIST && list.type != TYPE_STR &&
                      list.type != TYPE_HASH) ||
                     ((list.type == TYPE_LIST || list.type == TYPE_STR) &&
                      index.type != TYPE_INT)) {
@@ -3428,15 +3452,20 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.3 2002/04/10 22:16:31 bytenik Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.4 2002/04/10 22:48:27 bytenik Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.4  2002/04/10 22:48:27  bytenik
+ * Changed wrappers from ':operator_<op>()' to ':operator<op>()';
+ * Fixed bug in 'not' wrapper where 'call_verb()' was called with 'lhs' instead of 'arg';
+ * Added 'reference' wrapper -- ':operator[](index)'
+ *
  * Revision 1.3  2002/04/10 22:16:31  bytenik
  * Added wrapper around the not operator on objects
  *
  * Revision 1.2  2002/04/10 21:49:49  bytenik
- * Changed operand_ mappings to operator_ (incorrect word usage); Updated copyright banner.
+ * Changed operand_ mappings to operator (incorrect word usage); Updated copyright banner.
  *
  * Revision 1.1.1.1  2002/02/22 19:17:20  bytenik
  * Initial import of HybridCircle 2.1i-beta1
