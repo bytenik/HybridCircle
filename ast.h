@@ -93,6 +93,8 @@ enum Expr_Kind {
     EXPR_PROP, EXPR_VERB,
     EXPR_INDEX, EXPR_RANGE,
     EXPR_ASGN, EXPR_CALL,
+    EXPR_ASGNPLUS, EXPR_ASGNMINUS, EXPR_ASGNTIMES, EXPR_ASGNDIVIDE,
+    EXPR_ASGNMOD, EXPR_ASGNEXP,
     EXPR_PLUS, EXPR_MINUS, EXPR_TIMES, EXPR_DIVIDE, EXPR_MOD, EXPR_EXP,
     EXPR_NEGATE,
     EXPR_AND, EXPR_OR, EXPR_NOT,
@@ -236,8 +238,11 @@ extern void free_stmt(Stmt *);
 
 /* 
  * $Log: ast.h,v $
- * Revision 1.1  2002/02/22 19:16:53  bytenik
- * Initial revision
+ * Revision 1.2  2002/04/09 01:35:49  luke-jr
+ * Added operators +=, -=, *=, /=, %=, and ^=... They do not decompile yet
+ *
+ * Revision 1.1.1.1  2002/02/22 19:16:53  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:45  bytenik
  *

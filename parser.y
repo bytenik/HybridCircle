@@ -105,12 +105,15 @@ static void	check_loop_name(const char *, enum loop_exit_kind);
 %token	tTO tARROW tHASH
 
 %right	'='
+%right  tASGNPLUS tASGNMINUS tASGNTIMES tASGNDIVIDE tASGNMOD tASGNEXP
 %nonassoc '?' '|'
 %left	tOR tAND
 %left   tEQ tNE '<' tLE '>' tGE tIN
 %left	'+' '-'
 %left	'*' '/' '%'
 %right	'^'
+//%left   '++' '--'
+//%right  '++' '--'
 %left	'!' tUNARYMINUS
 %nonassoc '.' ':' '[' '$'
 
@@ -496,7 +499,109 @@ expr:
 		    vet_scatter($2);
 		    $$ = alloc_binary(EXPR_ASGN, e, $5);
 		}
-	| tID '(' arglist ')'
+        | expr tASGNPLUS expr
+                {
+                    Expr *e = $1;
+
+                    if (e->kind == EXPR_LIST) {
+                        yyerror("Cannot add LISTs.");
+                    } else {
+                        if (e->kind == EXPR_RANGE)
+                            e = e->e.range.base;
+                        while (e->kind == EXPR_INDEX)
+                            e = e->e.bin.lhs;
+                        if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+                            yyerror("Illegal expression on left side of"
+                                    " assignment.");
+                    }
+                    $$ = alloc_binary(EXPR_ASGNPLUS, $1, $3);
+                }
+        | expr tASGNMINUS expr
+                {
+                    Expr *e = $1;
+
+                    if (e->kind == EXPR_LIST) {
+                        yyerror("Cannot subtract LISTs.");
+                    } else {
+                        if (e->kind == EXPR_RANGE)
+                            e = e->e.range.base;
+                        while (e->kind == EXPR_INDEX)
+                            e = e->e.bin.lhs;
+                        if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+                            yyerror("Illegal expression on left side of"
+                                    " assignment.");
+                    }
+                    $$ = alloc_binary(EXPR_ASGNMINUS, $1, $3);
+                }
+        | expr tASGNTIMES expr
+                {
+                    Expr *e = $1;
+
+                    if (e->kind == EXPR_LIST) {
+                        yyerror("Cannot multiply LISTs.");
+                    } else {
+                        if (e->kind == EXPR_RANGE)
+                            e = e->e.range.base;
+                        while (e->kind == EXPR_INDEX)
+                            e = e->e.bin.lhs;
+                        if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+                            yyerror("Illegal expression on left side of"
+                                    " assignment.");
+                    }
+                    $$ = alloc_binary(EXPR_ASGNTIMES, $1, $3);
+                }
+        | expr tASGNDIVIDE expr
+                {
+                    Expr *e = $1;
+
+                    if (e->kind == EXPR_LIST) {
+                        yyerror("Cannot divide LISTs.");
+                    } else {
+                        if (e->kind == EXPR_RANGE)
+                            e = e->e.range.base;
+                        while (e->kind == EXPR_INDEX)
+                            e = e->e.bin.lhs;
+                        if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+                            yyerror("Illegal expression on left side of"
+                                    " assignment.");
+                    }
+                    $$ = alloc_binary(EXPR_ASGNDIVIDE, $1, $3);
+                }
+        | expr tASGNMOD expr
+                {
+                    Expr *e = $1;
+
+                    if (e->kind == EXPR_LIST) {
+                        yyerror("Cannot mod LISTs.");
+                    } else {
+                        if (e->kind == EXPR_RANGE)
+                            e = e->e.range.base;
+                        while (e->kind == EXPR_INDEX)
+                            e = e->e.bin.lhs;
+                        if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+                            yyerror("Illegal expression on left side of"
+                                    " assignment.");
+                    }
+                    $$ = alloc_binary(EXPR_ASGNMOD, $1, $3);
+                }
+        | expr tASGNEXP expr
+                {
+                    Expr *e = $1;
+
+                    if (e->kind == EXPR_LIST) {
+                        yyerror("Cannot exponent LISTs.");
+                    } else {
+                        if (e->kind == EXPR_RANGE)
+                            e = e->e.range.base;
+                        while (e->kind == EXPR_INDEX)
+                            e = e->e.bin.lhs;
+                        if (e->kind != EXPR_ID  &&  e->kind != EXPR_PROP)
+                            yyerror("Illegal expression on left side of"
+                                    " assignment.");
+                    }
+                    $$ = alloc_binary(EXPR_ASGNEXP, $1, $3);
+                }
+| tID '(' arglist ')'
 		{
 		    unsigned f_no;
 
@@ -876,7 +981,8 @@ start_over:
 	    }
 	} else {
 	    lex_ungetc(c);
-	    return '/';
+            return follow('=', tASGNDIVIDE, '/');
+	    //return '/';
 	}
     }
 
@@ -1027,8 +1133,14 @@ start_over:
 				: follow('>', tARROW, '='));
       case '!':         return follow('=', tNE, '!');
       case '|':         return follow('|', tOR, '|');
+      case '+':		return follow('=', tASGNPLUS, '+');
+      case '*':         return follow('=', tASGNTIMES, '*');
+//      case '/':         return follow('=', tASGNDIVIDE, '/');
+      case '%':         return follow('=', tASGNMOD, '%');
+      case '^':         return follow('=', tASGNEXP, '^');
       case '&':         return follow('&', tAND, '&');
-      case '-':         return follow('>', tHASH, '-');
+      case '-':         return follow('>', tHASH, 
+				follow('=', tASGNMINUS, '-'));
       normal_dot:
       case '.':		return follow('.', tTO, '.');
       default:          return c;
@@ -1307,12 +1419,15 @@ parse_list_as_program(Var code, Var *errors)
     return program;
 }
 
-char rcsid_parser[] = "$Id: parser.y,v 1.1 2002/02/22 19:17:52 bytenik Exp $";
+char rcsid_parser[] = "$Id: parser.y,v 1.2 2002/04/09 01:35:49 luke-jr Exp $";
 
 /* 
  * $Log: parser.y,v $
- * Revision 1.1  2002/02/22 19:17:52  bytenik
- * Initial revision
+ * Revision 1.2  2002/04/09 01:35:49  luke-jr
+ * Added operators +=, -=, *=, /=, %=, and ^=... They do not decompile yet
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:52  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *
