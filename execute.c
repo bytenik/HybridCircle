@@ -707,15 +707,6 @@ bi_prop_protected(enum bi_prop prop, Objid progr)
     case BP_F:
 	pname = "protect_f";
 	break;
-	case BP_P:
-	pname = "protect_p";
-	break;
-	case BP_M:
-	pname = "protect_m";
-	break;
-	case BP_H:
-	pname = "protect_h";
-	break;
     case BP_LOCATION:
 	pname = "protect_location";
 	break;
@@ -1441,16 +1432,38 @@ do {    						    	\
 	    break;
 
 	case OP_NOT:
-	    {
+	{
 		Var arg, ans;
 
 		arg = POP();
+
+		if ((arg.type == TYPE_OBJ) && valid(arg.v.obj))
+		{
+			Var arglist = new_list(0);
+			enum error err;
+			
+			STORE_STATE_VARIABLES();
+			err = call_verb(lhs.v.obj, "operator_!", arglist, 0);
+			free_var(arg);
+			if (err)
+			{
+				LOAD_STATE_VARIABLES();
+				PUSH_ERROR(err);
+			}
+			else
+			{
+				ans = POP();
+				LOAD_STATE_VARIABLES();
+				PUSH(ans);
+			}
+		}
+
 		ans.type = TYPE_INT;
 		ans.v.num = !is_true(arg);
 		PUSH(ans);
 		free_var(arg);
-	    }
-	    break;
+	}
+	break;
 
 	case OP_UNARY_MINUS:
 	    {
@@ -3415,10 +3428,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.2 2002/04/10 21:49:49 bytenik Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.3 2002/04/10 22:16:31 bytenik Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.3  2002/04/10 22:16:31  bytenik
+ * Added wrapper around the not operator on objects
+ *
  * Revision 1.2  2002/04/10 21:49:49  bytenik
  * Changed operand_ mappings to operator_ (incorrect word usage); Updated copyright banner.
  *
