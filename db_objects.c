@@ -642,9 +642,9 @@ db_can_hack(Objid oid, Objid progr)
 int
 db_can_power_hack(Objid oid, Objid progr)
 {
-	Objid owner;
+	Objid owner = db_object_owner(oid);
 	return (valid(progr) ? ((is_wizard(progr) && !db_object_has_flag(oid, FLAG_PROTECTED))
-		|| (is_wizard(progr) && progr<=(owner=db_object_owner(oid)))
+		|| (is_wizard(progr) && progr <= owner)
 #ifndef ADMIN_CANNOT_POWER_HACK
 		|| (is_admin(progr) && !is_wizard(owner) && !is_admin(owner))
 #endif
@@ -696,12 +696,15 @@ dbpriv_set_all_users(Var v)
     all_users = v;
 }
 
-char rcsid_db_objects[] = "$Id: db_objects.c,v 1.1 2002/02/22 19:17:07 bytenik Exp $";
+char rcsid_db_objects[] = "$Id: db_objects.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
 
 /* 
  * $Log: db_objects.c,v $
- * Revision 1.1  2002/02/22 19:17:07  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/11 22:57:39  bytenik
+ * Fixed various compiler warnings.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:07  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.2  2001/01/28 18:17:21  luke-jr
  * Fix for db_set_object_number...

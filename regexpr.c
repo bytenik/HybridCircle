@@ -462,11 +462,14 @@ re_compile_pattern(regex, size, bufp)
 	    /*NOTREACHED */
 	case Rbol:
 	    if (!beginning_context)
-		if (regexp_context_indep_ops)
-		    goto op_error;
-		else
-		    goto normal_char;
-	    opcode = Cbol;
+		{
+			if (regexp_context_indep_ops)
+				goto op_error;
+			else
+				goto normal_char;
+		}
+		
+		opcode = Cbol;
 	    goto store_opcode;
 	case Reol:
 	    if (!((pos >= size) ||
@@ -478,20 +481,24 @@ re_compile_pattern(regex, size, bufp)
 		   (regex[pos] == ')') :
 		   (pos + 1 < size && regex[pos] == '\134' &&
 		    regex[pos + 1] == ')'))))
+		   {
 		if (regexp_context_indep_ops)
 		    goto op_error;
 		else
 		    goto normal_char;
+		   }
 	    opcode = Ceol;
 	    goto store_opcode;
 	    /* NOTREACHED */
 	    break;
 	case Roptional:
 	    if (beginning_context)
+		{
 		if (regexp_context_indep_ops)
 		    goto op_error;
 		else
 		    goto normal_char;
+		}
 	    if (CURRENT_LEVEL_START == pattern_offset)
 		break;		/* ignore empty patterns for ? */
 	    ALLOC(3);
@@ -501,10 +508,12 @@ re_compile_pattern(regex, size, bufp)
 	case Rstar:
 	case Rplus:
 	    if (beginning_context)
+		{
 		if (regexp_context_indep_ops)
 		    goto op_error;
 		else
 		    goto normal_char;
+		}
 	    if (CURRENT_LEVEL_START == pattern_offset)
 		break;		/* ignore empty patterns for + and * */
 	    ALLOC(9);
@@ -1376,10 +1385,12 @@ re_search_2(bufp, string1, size1, string2, size2, pos, range, regs,
     } else
 	dir = 1;
     if (anchor == 2)
+	{
 	if (pos != 0)
 	    return -1;
 	else
 	    range = 0;
+	}
     for (; range >= 0; range--, pos += dir) {
 	if (fastmap) {
 	    if (dir == 1) {	/* searching forwards */
@@ -1642,8 +1653,11 @@ char rcsid_regexpr[] = "$Id";
 
 /* 
  * $Log: regexpr.c,v $
- * Revision 1.1  2002/02/22 19:17:57  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/11 22:57:39  bytenik
+ * Fixed various compiler warnings.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:57  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *

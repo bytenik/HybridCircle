@@ -122,12 +122,7 @@ proto_make_listener(Var desc, int *fd, Var * canon, const char **name)
 	return E_QUOTA;
     }
     address.sin_family = AF_INET;
-/*/// BEGIN LUKE-JR RECYCLED BLOCK /////
-    address.sin_addr.s_addr = htonl(INADDR_ANY);
-/////  END LUKE-JR RECYCLED BLOCK  ///*/
-///// BEGIN LUKE-JR ADDED BLOCK /////
     address.sin_addr.s_addr = bind_addr;
-/////  END LUKE-JR ADDED BLOCK  /////
     address.sin_port = htons(port);
     if (bind(s, (struct sockaddr *) &address, sizeof(address)) < 0) {
 	enum error e = E_QUOTA;
@@ -323,12 +318,15 @@ proto_open_connection(Var arglist, int *read_fd, int *write_fd,
 }
 #endif				/* OUTBOUND_NETWORK */
 
-char rcsid_net_bsd_tcp[] = "$Id: net_bsd_tcp.c,v 1.1 2002/02/22 19:17:40 bytenik Exp $";
+char rcsid_net_bsd_tcp[] = "$Id: net_bsd_tcp.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
 
 /* 
  * $Log: net_bsd_tcp.c,v $
- * Revision 1.1  2002/02/22 19:17:40  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/11 22:57:39  bytenik
+ * Fixed various compiler warnings.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:40  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.3  2001/01/29 21:39:25  luke-jr
  * Fixed a bug caused by the RECYCLED BLOCK stuff...

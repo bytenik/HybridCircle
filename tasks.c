@@ -1684,13 +1684,15 @@ killing_closure(vm the_vm, const char *status, void *data)
     struct kcl_data *kdata = data;
 
     if (the_vm->task_id == kdata->id)
-	if (is_wizard(kdata->owner)
-	    || progr_of_cur_verb(the_vm) == kdata->owner) {
-	    free_vm(the_vm, 1);
-	    return TEA_KILL;
-	} else
-	    return TEA_STOP;
-
+	{
+		if (is_wizard(kdata->owner) || progr_of_cur_verb(the_vm) == kdata->owner)
+		{
+			free_vm(the_vm, 1);
+			return TEA_KILL;
+		}
+		else
+			return TEA_STOP;
+	}
     return TEA_CONTINUE;
 }
 
@@ -1946,12 +1948,15 @@ register_tasks(void)
     register_function("flush_input", 1, 2, bf_flush_input, TYPE_OBJ, TYPE_ANY);
 }
 
-char rcsid_tasks[] = "$Id: tasks.c,v 1.1 2002/02/22 19:18:08 bytenik Exp $";
+char rcsid_tasks[] = "$Id: tasks.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
 
 /* 
  * $Log: tasks.c,v $
- * Revision 1.1  2002/02/22 19:18:08  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/11 22:57:39  bytenik
+ * Fixed various compiler warnings.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:18:08  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *

@@ -1,19 +1,42 @@
-/******************************************************************************
-  Copyright (c) 1992, 1995, 1996 Xerox Corporation.  All rights reserved.
-  Portions of this code were written by Stephen White, aka ghond.
-  Use and copying of this software and preparation of derivative works based
-  upon this software are permitted.  Any distribution of this software or
-  derivative works must comply with all applicable United States export
-  control laws.  This software is made available AS IS, and Xerox Corporation
-  makes no warranty about the software, its performance or its conformity to
-  any specification.  Any person obtaining a copy of this software is requested
-  to send their name and post office or electronic mail address to:
-    Pavel Curtis
-    Xerox PARC
-    3333 Coyote Hill Rd.
-    Palo Alto, CA 94304
-    Pavel@Xerox.Com
- *****************************************************************************/
+/***********************************************************\
+|	HybridCircle - by the Hybrid Development Team			|
+|                  ByteNik Solutions						|
+|															|
+|	Copyright (c) 2002 by ByteNik Solutions					|
+|															|
+|	HybridCircle is distributed under the GNU Lesser		|
+|	General Public License (LGPL), and is the intellectual	|
+|	property of ByteNik Solutions. All rights not granted	|
+|	explicitly by the LGPL are reserved. This product is	|
+|	protected by various international copyright laws and	|
+|	treaties and falls under jurisdiction of the United		|
+|	States government.										|
+|															|
+|	All distributions of this code, whether modified or in	|
+|	their original form, must maintain this licence at the	|
+|	top. Additionally, all new additions to HybridCircle	|
+|	may only be distributed if they feature this licence at	|
+|	the beginning of their code and are distributed under	|
+|	the LGPL.												|
+|															|
+|	ByteNik Solutions does not claim ownership to any code	|
+|	originating from the Xerox PARC laboratory or any other	|
+|	patches written by third parties for the LambdaMOO		|
+|	platform. LambdaMOO, from which this server is based,	|
+|	is not owned by ByteNik Solutions. However, any and all	|
+|	changes made by ByteNik Solutions are their sole		|
+|	property. The original Xerox licence agreement should	|
+|	be distributed with the HybridCircle source code along	|
+|	with HybridCircle's comprehensive copyright and licence	|
+|	agreement.												|
+|															|
+|	The latest version of HybridCircle and the HybridCircle	|
+|	source code should be available at HybridCircle's		|
+|	website, at:											|
+|		--- http://www.hybrid-moo.net/hybridcircle			|
+|	or at HybridSphere's SourceForge project, at:			|
+|		--- http://sourceforge.net/projects/hybridsphere	|
+\***********************************************************/
 
 #include "my-types.h"		/* must be first on some systems */
 #include "my-signal.h"
@@ -1179,9 +1202,7 @@ main(int argc, char **argv)
     int emergency = 0;
     Var desc;
     slistener *l;
-///// BEGIN LUKE-JR ADD BLOCK /////
-    char *IPonly = "";
-/////  END LUKE-JR ADD BLOCK  /////
+	char *IPonly = 0x00;
 
     init_cmdline(argc, argv);
 
@@ -1201,7 +1222,6 @@ main(int argc, char **argv)
 	    } else
 		argc = 0;	/* Provoke usage message below */
 	    break;
-///// BEGIN LUKE-JR ADD BLOCK /////
         case 'i':		/* Use {i, port} instead of port for listen */
             if (argc > 1) {
                 IPonly = argv[1];
@@ -1210,7 +1230,6 @@ main(int argc, char **argv)
             } else
                 argc = 0;	/* Provoke usage message below */
             break;
-/////  END LUKE-JR ADD BLOCK  /////
 	default:
 	    argc = 0;		/* Provoke usage message below */
 	}
@@ -1237,7 +1256,7 @@ main(int argc, char **argv)
 	exit(1);
     }
 
-    if (IPonly != "") {
+    if (IPonly) {
         Var rdesc;
         rdesc = desc;
         desc = new_list(2);
@@ -1487,13 +1506,9 @@ bf_crash(Var arglist, Byte next, void *vdata, Objid progr)
 	free_var(arglist);
 	return make_error_pack(E_PERM);
     }
-/*/// BEGIN LUKE-JR RECYCLED BLOCK /////
-    signal(SIGKILL, SIG_DFL);
-/////  END LUKE-JR RECYCLED BLOCK  ///*/
-///// BEGIN LUKE-JR ADD BLOCK /////
     exit(1);
-    return make_error_pack(E_NONE);
-/////  END LUKE-JR ADD BLOCK  /////
+    return make_error_pack(E_NONE);	// Even though program exits, strict compiler
+									// requires a return value
 }
 
 static package
@@ -2058,12 +2073,15 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.1 2002/02/22 19:18:01 bytenik Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
 
 /* 
  * $Log: server.c,v $
- * Revision 1.1  2002/02/22 19:18:01  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/11 22:57:39  bytenik
+ * Fixed various compiler warnings.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:18:01  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.13  2001/01/29 21:44:32  luke-jr
  * Another bug

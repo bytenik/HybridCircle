@@ -1164,6 +1164,7 @@ do {    						    	\
 					break;
 				default:
 					errlog("RUN: Imposible opcode in comparison: %d\n", op);
+					vname = "";
 					break;
 				}
 				STORE_STATE_VARIABLES();
@@ -1330,6 +1331,7 @@ do {    						    	\
 					break;
 				default:
 					errlog("RUN: Impossible opcode in arith ops: %d\n", op);
+					vname = "";
 					break;
 				}
 				STORE_STATE_VARIABLES();
@@ -1992,17 +1994,22 @@ do {    						    	\
 
 	case OP_CALL_VERB:
 	    {
-		enum error err = E_NONE;
-		Var args, verb, obj;
-		Objid class;
+		enum error	err		= E_NONE;
+		Objid		class	= -1;
+		Var			args,
+					verb,
+					obj;
 
 		args = POP();	/* args, should be list */
 		verb = POP();	/* verbname, should be string */
 		obj = POP();	/* objid, should be obj */
 
-		if (verb.type != TYPE_STR || args.type != TYPE_LIST) {
+		if (verb.type != TYPE_STR || args.type != TYPE_LIST)
+		{
 			err = E_TYPE;
-		} else if (obj.type == TYPE_WAIF) {
+		}
+		else if (obj.type == TYPE_WAIF)
+		{
 			char *str = mymalloc(strlen(verb.v.str) + 2,M_STRING);
 
 			class = obj.v.waif->class;
@@ -2010,11 +2017,14 @@ do {    						    	\
                         strcpy(str + 1, verb.v.str);
                         free_str(verb.v.str);
                         verb.v.str = str;
-		} else if (obj.type == TYPE_OBJ) {
+		}
+		else if (obj.type == TYPE_OBJ)
+		{
 			class = obj.v.obj;
 			if (verb.v.str[0] == WAIF_VERB_PREFIX)
 				err = E_VERBNF;
-		} else
+		}
+		else
 			err = E_TYPE;
 
 		if (err == E_NONE && !valid(class))
@@ -3452,10 +3462,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.6 2002/04/10 23:49:55 luke-jr Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.7 2002/06/11 22:57:39 bytenik Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.7  2002/06/11 22:57:39  bytenik
+ * Fixed various compiler warnings.
+ *
  * Revision 1.6  2002/04/10 23:49:55  luke-jr
  * I don't know...
  *

@@ -550,7 +550,7 @@ bf_set_verb_info(Var arglist, Byte next, void *vdata, Objid progr)
     const char *new_names;
     enum error e;
     db_verb_handle h;
-	Objid temp;
+	Objid temp = -1;
 
     if ((e = validate_verb_descriptor(desc)) != E_NONE);        /* Do nothing; e is already set. */
     else if (!valid(oid))
@@ -578,8 +578,8 @@ bf_set_verb_info(Var arglist, Byte next, void *vdata, Objid progr)
                                   && ((new_flags & VF_NOT_O) != (db_verb_flags(h) & VF_NOT_O))) {
                 free_str(new_names);
                 return make_error_pack(E_PERM);         
-        } else if ((new_owner != db_verb_owner(h) || mystrcasecmp(new_names, db_verb_names(h))) 
-                                 && !is_wizard(new_owner) 
+        } else if (((new_owner != db_verb_owner(h) || mystrcasecmp(new_names, db_verb_names(h))) 
+                                 && !is_wizard(new_owner))
                                  && (temp = name_conflict_with_ancestor(db_object_parent(oid), new_owner, new_names))
 								 || ((temp) && (temp <= new_owner))) 
 {
@@ -606,72 +606,7 @@ bf_set_verb_info(Var arglist, Byte next, void *vdata, Objid progr)
 
     return no_var_pack();
 }
-/*
-static package
-bf_set_verb_info(Var arglist, Byte next, void *vdata, Objid progr)
-{				/* (object, verb-desc, {owner, flags, names}) *
-    Objid oid = arglist.v.list[1].v.obj;
-    Var desc = arglist.v.list[2];
-    Var info = arglist.v.list[3];
-    Objid new_owner;
-    unsigned new_flags;
-    const char *new_names;
-    enum error e;
-    db_verb_handle h;
 
-    if ((e = validate_verb_descriptor(desc)) != E_NONE);	/* Do nothing; e is already set. *
-    else if (!valid(oid))
-	e = E_INVARG;
-    else
-	e = validate_verb_info(info, &new_owner, &new_flags, &new_names);
-
-    if (e != E_NONE) {
-	free_var(arglist);
-	return make_error_pack(e);
-    }
-    h = find_described_verb(oid, desc);
-    free_var(arglist);
-
-    if (!h.ptr) {
-	free_str(new_names);
-	return make_error_pack(E_VERBNF);
-    } else if (!db_verb_allows(h, progr, VF_WRITE)
-	       || (!is_wizard(progr) && db_verb_owner(h) != new_owner)) {
-	free_str(new_names);
-	return make_error_pack(E_PERM);
-/*** -o_Verbs Patch ***
-	} else if (!is_wizard(progr) && server_flag_option("protect_o_flag") 
-				  && ((new_flags & VF_NOT_O) != (db_verb_flags(h) & VF_NOT_O))) {
-		free_str(new_names);
-		return make_error_pack(E_PERM);		
-	} else if ((new_owner != db_verb_owner(h) || mystrcasecmp(new_names, db_verb_names(h))) 
-    				 && !is_wizard(new_owner) 
-    				 && name_conflict_with_ancestor(db_object_parent(oid), new_owner, new_names)) 
-{
-		free_str(new_names);
-		return make_error_pack(E_PERM);
-	} else {
-                /* ncwa mangles h sometimes... rematch it *
-                h = find_described_verb(oid, desc);
-                if ((new_flags & VF_NOT_O)
-	           && (new_owner != db_verb_owner(h) 
-	               || !(db_verb_flags(h) & VF_NOT_O)  
-	               || !mystrcasecmp(new_names, db_verb_names(h)))
-				  && name_conflict_with_descendants(oid, new_owner, new_names)) {
-		free_str(new_names);
-		return make_error_pack(E_INVARG);
-                }
-	}
-/* If ncwa can do it, so can ncwd.  Rematch again. *
-        h = find_described_verb(oid, desc);
-/*** end -o_Verbs Patch ***
-    db_set_verb_owner(h, new_owner);
-    db_set_verb_flags(h, new_flags);
-    db_set_verb_names(h, new_names);
-
-    return no_var_pack();
-}
-*/
 static const char *
 unparse_arg_spec(db_arg_spec spec)
 {
@@ -905,28 +840,24 @@ bf_asc(Var arglist, Byte next, void *vdata, Objid progr)
 static package
 bf_chr(Var arglist, Byte next, void *vdata, Objid progr)
 {
-  Var v;
-  //arglist.v.list[1].v.num = arglist.v.list[1].v.num - 127;
-  if ( arglist.v.list[1].v.num < 0 ||
-      arglist.v.list[1].v.num > 255) {
+	Var v;
+	if ( arglist.v.list[1].v.num < 0 || arglist.v.list[1].v.num > 255) {
     /* out of valid character range (out of ASCII range too) */
     free_var(arglist);
     return make_raise_pack(E_INVARG, "Range: 1 - 255", zero);
-  }
-  if (!is_wizard(progr) && (arglist.v.list[1].v.num == 13 ||
-arglist.v.list[1].v.num == 10)) {
-      free_var(arglist);
-      return make_raise_pack(E_PERM, 
-"Only wizards can make chr(13) or chr(10)", zero);
-  }
-  v.type = TYPE_STR;
-  v.v.str = (char *) mymalloc( sizeof(char) * 2, M_STRING );
-  v.v.str[0] = arglist.v.list[1].v.num;
-  v.v.str[1] = '\0';
-  free_var(arglist);
-  return make_var_pack(v);
+	}
+	if (!is_wizard(progr) && (arglist.v.list[1].v.num == 13 || arglist.v.list[1].v.num == 10))
+	{
+		free_var(arglist);
+		return make_raise_pack(E_PERM, "Only wizards can make chr(13) or chr(10)", zero);
+	}
+	v.type = TYPE_STR;
+	v.v.str = (char *) mymalloc( sizeof(char) * 2, M_STRING );
+	v.v.str[0] = arglist.v.list[1].v.num;
+	v.v.str[1] = '\0';
+	free_var(arglist);
+	return make_var_pack(v);
 }
-/////  END LUKE-JR ADD BLOCK  /////
 
 void
 register_verbs(void)
@@ -953,12 +884,15 @@ register_verbs(void)
 
 }
 
-char rcsid_verbs[] = "$Id: verbs.c,v 1.1 2002/02/22 19:18:14 bytenik Exp $";
+char rcsid_verbs[] = "$Id: verbs.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
 
 /* 
  * $Log: verbs.c,v $
- * Revision 1.1  2002/02/22 19:18:14  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/11 22:57:39  bytenik
+ * Fixed various compiler warnings.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:18:14  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.2  2001/01/28 19:36:58  luke-jr
  * Added chr() and asc(). chr() prevents chr(13) or chr(10) from non-wizards.
