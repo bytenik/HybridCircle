@@ -125,6 +125,13 @@ extern int server_int_option(const char *name, int defallt);
 				 * Otherwise, return DEFALLT.
 				 */
 
+extern int server_obj_option(const char *name, int defallt);
+                                /* If both $server_options and
+                                 * $server_options.NAME exist and the latter
+                                 * has a numeric value, then return that value.
+                                 * Otherwise, return DEFALLT.
+                                 */
+
 extern const char *server_string_option(const char *name,
 					const char *defallt);
 				/* If either $server_options or
@@ -162,8 +169,11 @@ extern int read_active_connections(void);
 
 /* 
  * $Log: server.h,v $
- * Revision 1.1  2002/02/22 19:18:02  bytenik
- * Initial revision
+ * Revision 1.2  2002/07/09 18:37:32  luke-jr
+ * write_db_to(char *file, int usetemp)
+ *
+ * Revision 1.1.1.1  2002/02/22 19:18:02  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *

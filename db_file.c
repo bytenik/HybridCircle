@@ -544,7 +544,7 @@ const char *reason_names[] =
 {"DUMPING", "CHECKPOINTING", "PANIC-DUMPING"};
 
 static int
-dump_database(Dump_Reason reason)
+dump_database_to(Dump_Reason reason, char *fileout, int usetemp)
 {
     Stream *s = new_stream(100);
     char *temp_name;
@@ -553,14 +553,16 @@ dump_database(Dump_Reason reason)
 
   retryDumping:
 
-    stream_printf(s, "%s.#%d#", dump_db_name, dump_generation);
+    stream_printf(s, "%s.#%d#", fileout, dump_generation);
     remove(reset_stream(s));	/* Remove previous checkpoint */
 
     if (reason == DUMP_PANIC)
-	stream_printf(s, "%s.PANIC", dump_db_name);
+	stream_printf(s, "%s.PANIC", fileout);
+    else if (!usetemp)
+        stream_printf(s, "%s", fileout);
     else {
 	dump_generation++;
-	stream_printf(s, "%s.#%d#", dump_db_name, dump_generation);
+	stream_printf(s, "%s.#%d#", fileout, dump_generation);
     }
     temp_name = reset_stream(s);
 
@@ -607,8 +609,8 @@ dump_database(Dump_Reason reason)
 	    fclose(f);
 	    oklog("%s on %s finished\n", reason_names[reason], temp_name);
 	    if (reason != DUMP_PANIC) {
-		remove(dump_db_name);
-		if (rename(temp_name, dump_db_name) != 0) {
+		remove(fileout);
+		if (rename(temp_name, fileout) != 0) {
 		    log_perror("Renaming temporary dump file");
 		    success = 0;
 		}
@@ -629,9 +631,21 @@ dump_database(Dump_Reason reason)
 
     return success;
 }
+
+static int
+dump_database(Dump_Reason reason)
+{
+    return dump_database_to(reason, dump_db_name, 1);
+}
+
 
 
 /*********** External interface ***********/
+
+int write_db_to(char *file, int usetemp)
+{
+    return dump_database_to(DUMP_CHECKPOINT, file, usetemp);
+}
 
 const char *
 db_usage_string(void)
@@ -727,12 +741,15 @@ db_shutdown()
     dump_database(DUMP_SHUTDOWN);
 }
 
-char rcsid_db_file[] = "$Id: db_file.c,v 1.1 2002/02/22 19:17:05 bytenik Exp $";
+char rcsid_db_file[] = "$Id: db_file.c,v 1.2 2002/07/09 18:37:32 luke-jr Exp $";
 
 /* 
  * $Log: db_file.c,v $
- * Revision 1.1  2002/02/22 19:17:05  bytenik
- * Initial revision
+ * Revision 1.2  2002/07/09 18:37:32  luke-jr
+ * write_db_to(char *file, int usetemp)
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:05  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *

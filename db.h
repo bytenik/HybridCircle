@@ -22,8 +22,9 @@
 #include "program.h"
 #include "structures.h"
 
-
 /**** file system ****/
+
+extern int write_db_to(char *file, int usetemp);
 
 extern const char *db_usage_string(void);
 				/* Returns a string describing the database
@@ -529,8 +530,11 @@ extern void db_delete_verb(db_verb_handle);
 
 /* 
  * $Log: db.h,v $
- * Revision 1.1  2002/02/22 19:17:04  bytenik
- * Initial revision
+ * Revision 1.2  2002/07/09 18:37:32  luke-jr
+ * write_db_to(char *file, int usetemp)
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:04  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.3  2001/01/28 17:39:37  bytenik
  * crash() is now a wizard only builtin

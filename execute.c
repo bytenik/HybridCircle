@@ -1176,19 +1176,26 @@ do {    						    	\
 					vname = "";
 					break;
 				}
-				STORE_STATE_VARIABLES();
-				err = call_verb(lhs.v.obj, vname, arglist, 0);
-				free_var(lhs);
-				if (err)
-				{
-					LOAD_STATE_VARIABLES();
-					PUSH_ERROR(err);
-				}
-				else
-				{
-					ans = POP();
-					LOAD_STATE_VARIABLES();
-					PUSH(ans);
+        	                if (!db_find_callable_verb(lhs.v.obj,
+	                          vname).ptr) {
+					free_var(arglist);
+					free_var(lhs);
+                                	PUSH_ERROR(E_TYPE);
+				} else {
+					STORE_STATE_VARIABLES();
+					err = call_verb(lhs.v.obj, vname, arglist, 0);
+					free_var(lhs);
+					if (err)
+					{
+						LOAD_STATE_VARIABLES();
+						PUSH_ERROR(err);
+					}
+					else
+					{
+						ans = POP();
+						LOAD_STATE_VARIABLES();
+						PUSH(ans);
+					}
 				}
 			}
 		} else if (rhs.type != lhs.type || rhs.type == TYPE_LIST) {
@@ -1251,6 +1258,9 @@ do {    						    	\
 		{
 			if (!valid(rhs.v.obj))
 				PUSH_ERROR(E_INVIND);
+			else if (!db_find_callable_verb(rhs.v.obj, 
+			  "operator_in").ptr)
+				PUSH_ERROR(E_TYPE);
 			else {
 				Var arglist;
 				enum error err;
@@ -2191,7 +2201,7 @@ do {    						    	\
 			v.type = TYPE_INT;
 			item = RUN_ACTIV.base_rt_stack[i];
 			if (item.type == TYPE_STR) {
-			    v.v.num = strlen(item.v.str);
+			    v.v.num = utf8_strlen(item.v.str);
 			    PUSH(v);
 			} else if (item.type == TYPE_LIST) {
 			    v.v.num = item.v.list[0].v.num;
@@ -3477,10 +3487,13 @@ read_activ(activation * a, int which_vector)
 }
 
 
-char rcsid_execute[] = "$Id: execute.c,v 1.10 2002/06/20 17:29:31 luke-jr Exp $";
+char rcsid_execute[] = "$Id: execute.c,v 1.11 2002/07/09 18:37:32 luke-jr Exp $";
 
 /* 
  * $Log: execute.c,v $
+ * Revision 1.11  2002/07/09 18:37:32  luke-jr
+ * write_db_to(char *file, int usetemp)
+ *
  * Revision 1.10  2002/06/20 17:29:31  luke-jr
  * Fixed invalid_verb_handler server option
  *

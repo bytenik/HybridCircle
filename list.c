@@ -1133,6 +1133,7 @@ register_list(void)
     register_function("encode_binary", 0, -1, bf_encode_binary);
     /* list */
     register_function("length", 1, 1, bf_length, TYPE_ANY);
+    register_function("len", 1, 1, bf_length, TYPE_ANY);
     register_function("setadd", 2, 2, bf_setadd, TYPE_LIST, TYPE_ANY);
     register_function("setremove", 2, 2, bf_setremove, TYPE_LIST, TYPE_ANY);
     register_function("listappend", 2, 3, bf_listappend,
@@ -1161,10 +1162,13 @@ register_list(void)
 }
 
 
-char rcsid_list[] = "$Id: list.c,v 1.2 2002/06/13 11:02:43 bytenik Exp $";
+char rcsid_list[] = "$Id: list.c,v 1.3 2002/07/09 18:37:32 luke-jr Exp $";
 
 /* 
  * $Log: list.c,v $
+ * Revision 1.3  2002/07/09 18:37:32  luke-jr
+ * write_db_to(char *file, int usetemp)
+ *
  * Revision 1.2  2002/06/13 11:02:43  bytenik
  * Implemented UTF8 patch.
  *
