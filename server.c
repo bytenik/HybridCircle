@@ -1063,7 +1063,10 @@ player_connected(Objid old_id, Objid new_id, int is_newly_created)
 	panic("Non-existent shandle connected");
 
     new_h->player = new_id;
-    new_h->connection_time = time(0);
+	if(server_flag_option("keep_unconnected_seconds"))
+		new_h->connection_time = existing_h->connection_time;
+	else
+		new_h->connection_time = time(0);
 
     if (existing_h) {
 	/* network_connection_name is allowed to reuse the same string
@@ -2073,10 +2076,13 @@ register_server(void)
 	register_function("getuid", 0, 0, bf_getuid);
 }
 
-char rcsid_server[] = "$Id: server.c,v 1.2 2002/06/11 22:57:39 bytenik Exp $";
+char rcsid_server[] = "$Id: server.c,v 1.3 2002/06/11 23:52:23 bytenik Exp $";
 
 /* 
  * $Log: server.c,v $
+ * Revision 1.3  2002/06/11 23:52:23  bytenik
+ * Added 'keep_unconnected_seconds' server option.
+ *
  * Revision 1.2  2002/06/11 22:57:39  bytenik
  * Fixed various compiler warnings.
  *
