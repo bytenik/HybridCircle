@@ -21,12 +21,12 @@
 #include "structures.h"
 #include "version.h"
 
-typedef unsigned char _Byte;
+typedef unsigned char Byte;
 
 typedef struct {
-    _Byte numbytes_label, numbytes_literal, numbytes_fork, numbytes_var_name,
+    Byte numbytes_label, numbytes_literal, numbytes_fork, numbytes_var_name,
      numbytes_stack;
-    _Byte *vector;
+    Byte *vector;
     unsigned size;
     unsigned max_stack;
 } Bytecodes;
@@ -64,6 +64,9 @@ extern void free_program(Program *);
 
 /* 
  * $Log: program.h,v $
+ * Revision 1.3  2002/05/29 21:46:46  bytenik
+ * Backed out changes - they caused conflicts with execute.h
+ *
  * Revision 1.2  2002/05/29 21:43:00  bytenik
  * Fixed conflict with latest zlib
  *
