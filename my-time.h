@@ -46,15 +46,20 @@ extern size_t strftime(char *s, size_t smax, const char *fmt,
 #endif
 
 #if HAVE_TZNAME && NDECL_TZNAME
+#ifndef __CYGWIN__
 extern char *tzname;
+#endif
 #endif
 
 #endif				/* !My_Time_H */
 
 /* 
  * $Log: my-time.h,v $
- * Revision 1.1  2002/02/22 19:17:37  bytenik
- * Initial revision
+ * Revision 1.2  2002/06/11 22:57:06  bytenik
+ * Fixed conflict with Cygwin.
+ *
+ * Revision 1.1.1.1  2002/02/22 19:17:37  bytenik
+ * Initial import of HybridCircle 2.1i-beta1
  *
  * Revision 1.1.1.1  2001/01/28 16:41:46  bytenik
  *
