@@ -47,6 +47,7 @@
 #include "functions.h"
 #include "hash.h"
 #include "log.h"
+#include "list.h"
 #include "md5.h"
 #include "options.h"
 #include "pattern.h"
@@ -385,7 +386,6 @@ static package
 bf_hash_remove(Var arglist, Byte next, void *vdata, Objid progr)
 {
 	Var key	= arglist.v.list[2],
-		res,
 		r	= var_dup(arglist.v.list[1]);	/* Modified from original patch; now makes a
 											   copy of the hash and returns it instead of a status bit */
 	if (!hashremove(r, key))
@@ -399,6 +399,34 @@ bf_hash_remove(Var arglist, Byte next, void *vdata, Objid progr)
 	return make_var_pack(r);
 }
 
+static package
+bf_hashslice(Var arglist, Byte next, void *vdata, Objid progr)
+{
+	int			n,
+				nCounter	= 0;
+    HashNode	*hn;
+	Var			res,
+				v			= arglist.v.list[1];
+	
+	free_var(arglist);
+
+	if(v.type != TYPE_HASH)
+		return make_error_pack(E_TYPE);
+	
+	res = new_list(v.v.hash->nnodes);
+	
+	for (n = 0; n < v.v.hash->nnodes; n++)
+	{
+		hn = v.v.hash->nodes[n];
+		res.v.list[n] = new_list(2);
+		res.v.list[n].v.list[1] = var_dup(hn->key);
+		res.v.list[n].v.list[2] = var_dup(hn->value);
+		oklog("Loop #%d good...\n", n);
+	}
+
+	return make_var_pack(res);
+}
+
 void
 register_hash(void)
 {
@@ -406,4 +434,5 @@ register_hash(void)
                       TYPE_ANY);
 	register_function("hash_remove", 2, 2, bf_hash_remove, TYPE_HASH,
                       TYPE_ANY);
+	register_function("hashslice", 1, 1, bf_hashslice, TYPE_HASH);
 }
